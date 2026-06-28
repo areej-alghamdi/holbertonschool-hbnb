@@ -21,3 +21,25 @@ sequenceDiagram
     API-->>Client: HTTP 201 Created (Success Response)
 ```
 ![User Registration Diagram](user_registration.png)
+
+## 2. Place Creation Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    actor Client as User/Client
+    participant API as Presentation (API)
+    participant Facade as Business Logic (Facade)
+    participant UserModel as User Model
+    participant DB as Persistence (DB)
+
+    Client->>API: POST /api/v1/places (Place Data & Owner ID)
+    API->>Facade: create_place(data)
+    activate Facade
+    Facade->>DB: Check if owner_id exists
+    DB-->>Facade: Owner is valid (Exists)
+    Facade->>UserModel: Validate Owner business rules
+    Facade->>DB: save(new_place)
+    DB-->>Facade: Place saved successfully
+    Facade-->>API: Return Place Object & HTTP 201
+    deactivate Facade
+    API-->>Client: HTTP 201 Created (Success Response)
