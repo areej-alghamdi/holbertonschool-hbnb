@@ -20,3 +20,4 @@ sequenceDiagram
     deactivate Facade
     API-->>Client: HTTP 201 Created (Success Response)
 ```
+![User Registration Diagram](user_registration.png)
