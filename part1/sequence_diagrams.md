@@ -23,6 +23,7 @@ sequenceDiagram
 
 ## 2. Place Creation Sequence Diagram
 
+````mermaid
 sequenceDiagram
     actor Client as User/Client
     participant API as Presentation (API)
@@ -41,4 +42,3 @@ sequenceDiagram
     Facade-->>API: Return Place Object & HTTP 201
     deactivate Facade
     API-->>Client: HTTP 201 Created (Success Response)
-    
