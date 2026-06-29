@@ -66,7 +66,6 @@ sequenceDiagram
     deactivate Facade
     API-->>Client: HTTP 201 Created (Success Response)
 
-
 ## 4. Fetch Amenities Sequence Diagram
 
 ```mermaid
@@ -84,3 +83,4 @@ sequenceDiagram
     Facade-->>API: Return Amenities Data & HTTP 200
     deactivate Facade
     API-->>Client: HTTP 200 OK (Success Response with Data)
+    
