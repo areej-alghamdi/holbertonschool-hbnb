@@ -20,7 +20,6 @@ sequenceDiagram
     deactivate Facade
     API-->>Client: HTTP 201 Created (Success Response)
 ```
-![User Registration Diagram](user_registration.png)
 
 ## 2. Place Creation Sequence Diagram
 
@@ -41,5 +40,27 @@ sequenceDiagram
     Facade->>DB: save(new_place)
     DB-->>Facade: Place saved successfully
     Facade-->>API: Return Place Object & HTTP 201
+    deactivate Facade
+    API-->>Client: HTTP 201 Created (Success Response)
+
+    ## 3. Review Submission Sequence Diagram
+
+```mermaid
+sequenceDiagram
+    actor Client as User/Client
+    participant API as Presentation (API)
+    participant Facade as Business Logic (Facade)
+    participant DB as Persistence (DB)
+
+    Client->>API: POST /api/v1/reviews (User ID, Place ID, Rating, Comment)
+    API->>Facade: create_review(data)
+    activate Facade
+    Facade->>DB: Validate user_id exists
+    DB-->>Facade: User is valid
+    Facade->>DB: Validate place_id exists
+    DB-->>Facade: Place is valid
+    Facade->>DB: save(new_review)
+    DB-->>Facade: Review saved successfully
+    Facade-->>API: Return Review Object & HTTP 201
     deactivate Facade
     API-->>Client: HTTP 201 Created (Success Response)
