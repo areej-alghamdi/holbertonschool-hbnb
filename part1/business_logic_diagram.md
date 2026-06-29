@@ -1,3 +1,10 @@
+# HBnB Application - Class Diagram
+
+This file shows the detailed Class Diagram for the Business Logic layer of the HBnB application, depicting entities, attributes, methods, and relationships.
+---
+
+## 1. Business Logic Layer Class Diagram
+
 ```mermaid
 classDiagram
     class BaseModel {
