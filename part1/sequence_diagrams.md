@@ -66,21 +66,20 @@ sequenceDiagram
     deactivate Facade
     API-->>Client: HTTP 201 Created (Success Response)
 ```
-## 4. Fetch Amenities Sequence Diagram
+## 4. Fetching a List of Places Sequence Diagram
 
-```mermaid
 sequenceDiagram
     actor Client as User/Client
     participant API as Presentation (API)
     participant Facade as Business Logic (Facade)
     participant DB as Persistence (DB)
 
-    Client->>API: GET /api/v1/amenities
-    API->>Facade: get_amenities()
+    Client->>API: GET /api/v1/places
+    API->>Facade: get_places()
     activate Facade
-    Facade->>DB: fetch_all_amenities()
-    DB-->>Facade: Return list of amenities
-    Facade-->>API: Return Amenities Data & HTTP 200
+    Facade->>DB: fetch_all_places()
+    DB-->>Facade: Return list of places
+    Facade-->>API: Return Places Data & HTTP 200
     deactivate Facade
-    API-->>Client: HTTP 200 OK (Success Response with Data)
+    API-->>Client: HTTP 200 OK (Success Response with Places List)
 ```
