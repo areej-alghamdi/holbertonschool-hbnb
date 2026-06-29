@@ -1,3 +1,4 @@
+```mermaid
 classDiagram
     class BaseModel {
         +UUID4 id
@@ -53,7 +54,7 @@ classDiagram
     User "1" --> "0..*" Place : owns
     User "1" --> "0..*" Review : writes
     Place "1" *-- "0..*" Review : contains
-    Place "0..*" referral "0..*" Amenity : has
+    Place "0..*" --> "0..*" Amenity : has
 
 
 
