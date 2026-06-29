@@ -1,3 +1,9 @@
+# HBnB Application - Sequence Diagrams
+
+This document contains the UML sequence diagrams for the core API endpoints of the HBnB application. These diagrams illustrate the detailed interaction flow between the application's core layers: **Presentation Layer (API)**, **Business Logic Layer (Facade/Models)**, and **Persistence Layer (Database)** to show how each specific use case is handled step-by-step.
+
+---
+
 ## 1. User Registration Sequence Diagram
 
 ```mermaid
