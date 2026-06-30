@@ -33,7 +33,7 @@ sequenceDiagram
     actor Client as User/Client
     participant API as Presentation (API)
     participant Facade as Business Logic (Facade)
-    participant UserModel as User Model
+    participant PlaceModel as Place Model
     participant DB as Persistence (DB)
 
     Client->>API: POST /api/v1/places (Place Data & Owner ID)
@@ -41,7 +41,7 @@ sequenceDiagram
     activate Facade
     Facade->>DB: Check if owner_id exists
     DB-->>Facade: Owner is valid (Exists)
-    Facade->>UserModel: Validate Owner business rules
+    Facade->>PlaceModel: Create new Place instance & validate rules    Facade->>DB:     save(new_place)
     Facade->>DB: save(new_place)
     DB-->>Facade: Place saved successfully
     Facade-->>API: Return Place Object & HTTP 201
