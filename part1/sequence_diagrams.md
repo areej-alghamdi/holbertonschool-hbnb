@@ -7,23 +7,31 @@ This file shows how the API, Business Logic, and Database work together to handl
 
 ```mermaid
 sequenceDiagram
-    actor Client as User/Client
+    autonumber
+    actor User as User/Client
     participant API as Presentation (API)
-    participant Facade as Business Logic (Facade)
-    participant Model as User Model
+    participant BL as Business Logic (Facade)
+    participant UM as User Model
     participant DB as Persistence (DB)
 
-    Client->>API: POST /api/v1/users (Registration Data)
-    API->>Facade: register_user(data)
-    activate Facade
-    Facade->>DB: Check if email exists
-    DB-->>Facade: Email is unique
-    Facade->>Model: Create new User instance
-    Facade->>DB: save(user)
-    DB-->>Facade: User saved successfully
-    Facade-->>API: Return User Object & HTTP 201
-    deactivate Facade
-    API-->>Client: HTTP 201 Created (Success Response)
+    User->>API: POST /api/v1/users (Registration Data)
+    API->>BL: register_user(data)
+    activate BL
+    BL->>DB: Check if email exists
+    DB-->>BL: Return email status
+
+    alt Email is unique
+        BL->>UM: Create new User instance
+        UM-->>BL: Return instance
+        BL->>DB: save(user)
+        DB-->>BL: User saved successfully
+        BL-->>API: Return User Object & HTTP 201
+        API-->>User: HTTP 201 Created (Success Response)
+    else Email already exists
+        BL-->>API: Return Error (Email already registered)
+        API-->>User: HTTP 400 Bad Request (Error Response)
+    end
+    deactivate BL
 ```
 
 ## 2. Place Creation Sequence Diagram
@@ -53,24 +61,33 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    actor Client as User/Client
+    autonumber
+    actor User as User/Client
     participant API as Presentation (API)
-    participant Facade as Business Logic (Facade)
+    participant BL as Business Logic (Facade)
     participant DB as Persistence (DB)
 
-    Client->>API: POST /api/v1/reviews (User ID, Place ID, Rating, Comment)
-    API->>Facade: create_review(data)
-    activate Facade
-    Facade->>DB: Validate user_id exists
-    DB-->>Facade: User is valid
-    Facade->>DB: Validate place_id exists
-    DB-->>Facade: Place is valid
-    Facade->>DB: save(new_review)
-    DB-->>Facade: Review saved successfully
-    Facade-->>API: Return Review Object & HTTP 201
-    deactivate Facade
-    API-->>Client: HTTP 201 Created (Success Response)
+    User->>API: POST /api/v1/reviews (User ID, Place ID, Rating, Comment)
+    API->>BL: create_review(data)
+    activate BL
+    BL->>DB: Validate user_id exists
+    DB-->>BL: User validation status
+    BL->>DB: Validate place_id exists
+    DB-->>BL: Place validation status
+
+    alt User and Place are both valid
+        BL->>BL: save(new_review)
+        BL->>DB: Save review data
+        DB-->>BL: Review saved successfully
+        BL-->>API: Return Review Object & HTTP 201
+        API-->>User: HTTP 201 Created (Success Response)
+    else User or Place is invalid
+        BL-->>API: Return Error (Target Entity Not Found)
+        API-->>User: HTTP 404 Not Found (Error Response)
+    end
+    deactivate BL
 ```
+
 ## 4. Fetching a List of Places Sequence Diagram
 
 ```mermaid
