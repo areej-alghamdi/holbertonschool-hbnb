@@ -41,7 +41,7 @@ sequenceDiagram
     activate Facade
     Facade->>DB: Check if owner_id exists
     DB-->>Facade: Owner is valid (Exists)
-    Facade->>PlaceModel: Create new Place instance & validate rules    Facade->>DB:     save(new_place)
+    Facade->>PlaceModel: Create new Place instance & validate rules
     Facade->>DB: save(new_place)
     DB-->>Facade: Place saved successfully
     Facade-->>API: Return Place Object & HTTP 201
