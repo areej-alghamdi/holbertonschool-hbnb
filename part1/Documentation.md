@@ -178,4 +178,130 @@ A feature a place can offer — name and description, tracked with `DateTime` ti
 
 > **Note:** All four entities carry the same base `id: UUID` field. Timestamps (`created_at` / `updated_at`) use `Date` for User, Place, and Review, and `DateTime` for Amenity — so every record can be uniquely identified and traced over time.
 
- 
+
+ # 4. API Interaction Flow
+
+In this section, we describe how the system handles the primary API operations during runtime. The sequence diagrams illustrate the step-by-step communication between the **Presentation Layer**, the **Business Logic Layer (Facade)**, and the **Persistence Layer**, ensuring that no layer is bypassed.
+
+---
+
+### 4.1 User Registration
+This flow handles the process of creating a new user account. The system checks if the email is already registered before saving the user data.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User/Client
+    participant API as Presentation (API)
+    participant BL as Business Logic (Facade)
+    participant DB as Persistence (DB)
+
+    User->>API: POST /api/v1/users (Registration Data)
+    API->>BL: register_user(data)
+    activate BL
+    BL->>DB: Check if email exists
+    DB-->>BL: Return email status
+
+    alt Email is unique
+        BL->>BL: Create new User instance
+        BL->>DB: save(user)
+        DB-->>BL: User saved successfully
+        BL-->>API: Return User Object & HTTP 201
+        API-->>User: HTTP 201 Created (Success Response)
+    else Email already exists
+        BL-->>API: Return Error (Email already registered)
+        API-->>User: HTTP 400 Bad Request (Error Response)
+    end
+    deactivate BL
+```
+
+    Explanatory Notes:
+Purpose: To register new users safely and prevent duplicate accounts with the same email.
+Design Decision: The Business Logic Layer requests the database to verify the email first. If the email exists, the system stops the process and returns an HTTP 400 Bad Request error immediately.
+
+### 4.2 Place Creation
+This diagram tracks the steps required when an authorized user creates a new property listing (place). The place must be linked to a valid user who acts as the owner.
+
+```mermaid
+sequenceDiagram
+    actor Client as User/Client
+    participant API as Presentation (API)
+    participant Facade as Business Logic (Facade)
+    participant PlaceModel as Place Model
+    participant DB as Persistence (DB)
+
+    Client->>API: POST /api/v1/places (Place Data & Owner ID)
+    API->>Facade: create_place(data)
+    activate Facade
+    Facade->>DB: Check if owner_id exists
+    DB-->>Facade: Owner is valid (Exists)
+    Facade->>PlaceModel: Create new Place instance & validate rules
+    Facade->>DB: save(new_place)
+    DB-->>Facade: Place saved successfully
+    Facade-->>API: Return Place Object & HTTP 201
+    deactivate Facade
+    API-->>Client: HTTP 201 Created (Success Response).
+```
+
+    Explanatory Notes:
+Purpose: To create a property listing and assign it to the correct owner.
+Design Decision: The system contacts the database to ensure the owner_id exists before initializing the Place Model. Then, it validates specific attributes like price and coordinates before saving the record.
+
+
+### 4.3 Review Submission
+This flow shows how a user submits a review and rating for a specific place. The system ensures that both the user and the place are valid before creating the review.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as User/Client
+    participant API as Presentation (API)
+    participant BL as Business Logic (Facade)
+    participant DB as Persistence (DB)
+
+    User->>API: POST /api/v1/reviews (User ID, Place ID, Rating, Comment)
+    API->>BL: create_review(data)
+    activate BL
+    BL->>DB: Validate user_id exists
+    DB-->>BL: User validation status
+    BL->>DB: Validate place_id exists
+    DB-->>BL: Place validation status
+
+    alt User and Place are both valid
+        BL->>BL: save(new_review)
+        BL->>DB: Save review data
+        DB-->>BL: Review saved successfully
+        BL-->>API: Return Review Object & HTTP 201
+        API-->>User: HTTP 201 Created (Success Response)
+    else User or Place is invalid
+        BL-->>API: Return Error (Target Entity Not Found)
+        API-->>User: HTTP 404 Not Found (Error Response)
+    end
+    deactivate BL
+```
+Explanatory Notes:
+Purpose: To handle user feedback and connect the review safely to both the user and the place.
+Design Decision: Dual validation is required. If either the user_id or place_id is not found in the database, the system rejects the request and returns an HTTP 404 Not Found error.
+
+### 4.4 Fetching a List of Places
+This diagram outlines the process of retrieving all property listings from the system.
+
+```mermaid
+sequenceDiagram
+    actor Client as User/Client
+    participant API as Presentation (API)
+    participant Facade as Business Logic (Facade)
+    participant DB as Persistence (DB)
+
+    Client->>API: GET /api/v1/places
+    API->>Facade: get_places()
+    activate Facade
+    Facade->>DB: fetch_all_places()
+    DB-->>Facade: Return list of places
+    Facade-->>API: Return Places Data & HTTP 200
+    deactivate Facade
+    API-->>Client: HTTP 200 OK (Success Response with Places List)
+```
+Explanatory Notes:
+Purpose: To load all existing properties so they can be viewed on the front-end client interface.
+Design Decision: This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
