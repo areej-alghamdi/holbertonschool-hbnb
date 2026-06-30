@@ -217,8 +217,8 @@ sequenceDiagram
 
     
     Explanatory Notes:
-Purpose: To register new users safely and prevent duplicate accounts with the same email.
-Design Decision: The Business Logic Layer requests the database to verify the email first. If the email exists, the system stops the process and returns an HTTP 400 Bad Request error immediately.
+* **Purpose:** register new users safely and prevent duplicate accounts with the same email.
+* **Design Decision:** The Business Logic Layer requests the database to verify the email first. If the email exists, the system stops the process and returns an HTTP 400 Bad Request error immediately.
 
 ### 4.2 Place Creation
 This diagram tracks the steps required when an authorized user creates a new property listing (place). The place must be linked to a valid user who acts as the owner.
@@ -246,8 +246,8 @@ sequenceDiagram
 
    
     Explanatory Notes:
-Purpose: To create a property listing and assign it to the correct owner.
-Design Decision: The system contacts the database to ensure the owner_id exists before initializing the Place Model. Then, it validates specific attributes like price and coordinates before saving the record.
+* **Purpose:** create a property listing and assign it to the correct owner.
+* **Design Decision:** The system contacts the database to ensure the owner_id exists before initializing the Place Model. Then, it validates specific attributes like price and coordinates before saving the record.
 
 
 ### 4.3 Review Submission
@@ -283,8 +283,8 @@ sequenceDiagram
 ```
 
 Explanatory Notes:
-Purpose: To handle user feedback and connect the review safely to both the user and the place.
-Design Decision: Dual validation is required. If either the user_id or place_id is not found in the database, the system rejects the request and returns an HTTP 404 Not Found error.
+* **Purpose:** To handle user feedback and connect the review safely to both the user and the place.
+* **Design Decision:** Dual validation is required. If either the user_id or place_id is not found in the database, the system rejects the request and returns an HTTP 404 Not Found error.
 
 ### 4.4 Fetching a List of Places
 This diagram outlines the process of retrieving all property listings from the system.
@@ -307,5 +307,5 @@ sequenceDiagram
 ```
 
 Explanatory Notes:
-Purpose: To load all existing properties so they can be viewed on the front-end client interface.
-Design Decision: This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
+* **Purpose:** To load all existing properties so they can be viewed on the front-end client interface.
+* **Design Decision:** This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
