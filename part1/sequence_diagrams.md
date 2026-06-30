@@ -49,8 +49,12 @@ sequenceDiagram
     activate Facade
     Facade->>DB: Check if owner_id exists
     DB-->>Facade: Owner is valid (Exists)
+<<<<<<< HEAD
     Facade->>PlaceModel: Create new Place instance & validate rules
     Facade->>DB: save(new_place)
+=======
+    Facade->>PlaceModel: Create new Place instance & validate rules    Facade->>DB: save(new_place)
+>>>>>>> 82118ac (Fix Place Model lifeline and refine sequence diagrams)
     DB-->>Facade: Place saved successfully
     Facade-->>API: Return Place Object & HTTP 201
     deactivate Facade
