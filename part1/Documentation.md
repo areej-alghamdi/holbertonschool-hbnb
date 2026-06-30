@@ -215,6 +215,7 @@ sequenceDiagram
     deactivate BL
 ```
 
+    
     Explanatory Notes:
 Purpose: To register new users safely and prevent duplicate accounts with the same email.
 Design Decision: The Business Logic Layer requests the database to verify the email first. If the email exists, the system stops the process and returns an HTTP 400 Bad Request error immediately.
@@ -243,6 +244,7 @@ sequenceDiagram
     API-->>Client: HTTP 201 Created (Success Response).
 ```
 
+   
     Explanatory Notes:
 Purpose: To create a property listing and assign it to the correct owner.
 Design Decision: The system contacts the database to ensure the owner_id exists before initializing the Place Model. Then, it validates specific attributes like price and coordinates before saving the record.
@@ -279,6 +281,7 @@ sequenceDiagram
     end
     deactivate BL
 ```
+
 Explanatory Notes:
 Purpose: To handle user feedback and connect the review safely to both the user and the place.
 Design Decision: Dual validation is required. If either the user_id or place_id is not found in the database, the system rejects the request and returns an HTTP 404 Not Found error.
@@ -302,6 +305,7 @@ sequenceDiagram
     deactivate Facade
     API-->>Client: HTTP 200 OK (Success Response with Places List)
 ```
+
 Explanatory Notes:
 Purpose: To load all existing properties so they can be viewed on the front-end client interface.
 Design Decision: This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
