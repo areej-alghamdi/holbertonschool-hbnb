@@ -132,7 +132,7 @@ The **Facade Pattern** acts as a simplified interface between layers (The comple
 - No layer skips another. This keeps the code organized and easy to maintain.
 -The Facade layer hides this complexity from the Service or API layer, so the rest of the application doesn't need to know how or where data is being saved.
 
-*for more details (if you wish) you can see the relationship between the Facade Pattern flow and the the three layers of package diagram in the package_diagram.md
+*for more details (if you wish) you can see the relationship between the Facade Pattern flow and the the three layers of package diagram in the package_diagram.md file
 
 ---
 
