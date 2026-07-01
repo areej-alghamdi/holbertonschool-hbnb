@@ -1,5 +1,8 @@
-# HBnB Evolution — Part 1: Technical Documentation
+#Holberton school -HBnB
+ HBnB Evolution 
 
+#Part 1: Technical Documentation 
+Application Architecture
 
 
 **High-Level Architecture, Business Logic Design, and API Interaction Flows**
@@ -56,13 +59,13 @@ Repository: `holbertonschool-hbnb` — Directory: `part1`
 
 
 
-This document outlines the technical architecture for Phase 1 of HBnB Evolution—a lightweight property rental platform. The system establishes the foundational mechanics for user registration, real estate listing creation ("places"), stay feedback (reviews), and feature options (amenities).
+This document outlines the technical architecture for Phase 1 of HBnB Evolution—a lightweight property rental platform.a simplified platform inspired by AirBnB. 
+The objective of this phase is to layout a solid foundation detailing the high-level architecture, business entities, core logic, and step-by-step system interactions across all runtime operations.
+The system establishes the foundational mechanics for user registration, real estate listing creation ("places"), stay feedback (reviews), and feature options (amenities).
 
 The purpose of this blueprint is to cement the core design before any development begins. This ensures that Phase 2 (API Delivery) and Phase 3 (Database Integration) build upon a structured framework rather than an improvised codebase.
 
 The platform is specified from three distinct perspectives:
-
-
 
 -A Package Diagram: Illustrating the vertical layer configurations.
 
@@ -72,16 +75,14 @@ The platform is specified from three distinct perspectives:
 
 Together, the first two components define the static structure of the system, while the third illustrates its dynamic runtime behavior, providing a complete view of the application and its data flows.
 
-# holbertonschool-hbnb
-HBnB Evolution project
+
+
 
 # Part 1 - Technical Documentation
 
-## HBnB Evolution - Application Architecture
 
 ---
 
-## Overview
 
 ## This document provides the technical documentation for the HBnB Evolution application.
 A simplified HBnB-like platform. It covers the overall architecture, the detailed
@@ -144,16 +145,9 @@ The **Facade Pattern** acts as a simplified interface between layers (The comple
 
 ### Package Diagram
 
-See the file `package_diagram` in this directory for the visual diagram. Need Auditing
+See the file `package_diagram` in this directory for the visual diagram. 
 
 ---
-
-## Authors
--Ahaad AL-Qahtani  <Email>
--Areej Al-Ghamdi   <Email>
--Hadeel Al-Qahatni <Email>
-
--Hadeel Al-Qahatni <Email>
 
 
 ---  
@@ -378,6 +372,7 @@ sequenceDiagram
     participant Facade as Business Logic (Facade)
     participant DB as Persistence (DB)
 
+
     Client->>API: GET /api/v1/places
     API->>Facade: get_places()
     activate Facade
@@ -391,3 +386,8 @@ sequenceDiagram
 Explanatory Notes:
 * **Purpose:** To load all existing properties so they can be viewed on the front-end client interface.
 * **Design Decision:** This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
+
+  ##Authors:
+  Haad
+  Areej Al-Ghamdi   <areejaa12@gmail.com>
+  Hadeel Al-Qahtani <hadeel.alqhtani206@gmail.com>
