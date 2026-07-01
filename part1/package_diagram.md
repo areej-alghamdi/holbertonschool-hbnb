@@ -5,14 +5,14 @@ and how the layers communicate via the Facade Pattern.
 
 ```mermaid
 graph TD
-    subgraph Presentation["📦 Presentation Layer"]
+    subgraph Presentation[" Presentation Layer"]
         direction TB
         API["<b>REST API</b><br/>──────────────<br/>+ register_user()<br/>+ create_place()<br/>+ submit_review()<br/>+ get_places()"]
         Services["<b>Services</b><br/>──────────────<br/>+ handle_request()<br/>+ validate_input()<br/>+ format_response()"]
         Auth["<b>Auth & Session</b><br/>──────────────<br/>+ login()<br/>+ logout()<br/>+ validate_token()"]
     end
 
-    subgraph Business["📦 Business Logic Layer"]
+    subgraph Business["  Business Logic Layer"]
         direction TB
         User["<b>User Model</b><br/>──────────────<br/>- id<br/>- first_name<br/>- last_name<br/>- email<br/>──────────────<br/>+ register()<br/>+ update_profile()<br/>+ delete()"]
         Place["<b>Place Model</b><br/>──────────────<br/>- id<br/>- title<br/>- price<br/>- latitude<br/>- longitude<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
@@ -20,7 +20,7 @@ graph TD
         Amenity["<b>Amenity Model</b><br/>──────────────<br/>- id<br/>- name<br/>- description<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
     end
 
-    subgraph Persistence["📦 Persistence Layer"]
+    subgraph Persistence["  Persistence Layer"]
         direction TB
         Repo["<b>Repository</b><br/>──────────────<br/>+ add()<br/>+ get()<br/>+ update()<br/>+ delete()"]
         DB["<b>Database Access</b><br/>──────────────<br/>+ execute_query()<br/>+ commit()<br/>+ rollback()"]
@@ -66,3 +66,28 @@ the Facade to reach the Business Logic Layer.
 the Facade to reach the Persistence Layer.
 * This ensures each layer has one clear responsibility and changes in one layer do 
 not break the others.
+
+
+## Facade Pattern Flow
+
+This diagram shows how the Facade Pattern controls 
+communication between the layers step by step.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant P as Presentation Layer
+    participant F as Facade
+    participant B as Business Logic Layer
+    participant DB as Persistence Layer
+
+    U->>P: Send Request
+    P->>F: Call Facade
+    F->>B: Forward to Business Logic
+    B->>F: Apply Rules
+    F->>DB: Save/Load Data
+    DB->>F: Return Data
+    F->>P: Return Result
+    P->>U: Send Response
+```
+
