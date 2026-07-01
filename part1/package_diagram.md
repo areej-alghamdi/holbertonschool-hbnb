@@ -5,28 +5,33 @@ and how the layers communicate via the Facade Pattern.
 
 ```mermaid
 graph TD
-    subgraph Presentation[" Presentation Layer"]
-        API["REST API\nRoutes & Endpoints"]
-        Services["Services\nRequest Handling"]
-        Auth["Auth & Session\nToken Validation"]
+    subgraph Presentation["📦 Presentation Layer"]
+        direction TB
+        API["<b>REST API</b><br/>──────────────<br/>+ register_user()<br/>+ create_place()<br/>+ submit_review()<br/>+ get_places()"]
+        Services["<b>Services</b><br/>──────────────<br/>+ handle_request()<br/>+ validate_input()<br/>+ format_response()"]
+        Auth["<b>Auth & Session</b><br/>──────────────<br/>+ login()<br/>+ logout()<br/>+ validate_token()"]
     end
 
-    subgraph Business[" Business Logic Layer"]
-        User["User\nRegister & Update Profile"]
-        Place["Place\nCreate & Manage Listings"]
-        Review["Review\nRate & Comment"]
-        Amenity["Amenity\nManage Features"]
+    subgraph Business["📦 Business Logic Layer"]
+        direction TB
+        User["<b>User Model</b><br/>──────────────<br/>- id<br/>- first_name<br/>- last_name<br/>- email<br/>──────────────<br/>+ register()<br/>+ update_profile()<br/>+ delete()"]
+        Place["<b>Place Model</b><br/>──────────────<br/>- id<br/>- title<br/>- price<br/>- latitude<br/>- longitude<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
+        Review["<b>Review Model</b><br/>──────────────<br/>- id<br/>- rating<br/>- comment<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
+        Amenity["<b>Amenity Model</b><br/>──────────────<br/>- id<br/>- name<br/>- description<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
     end
 
-    subgraph Persistence[" Persistence Layer"]
-        Repo["Repository\nCRUD Operations"]
-        DB["Database Access\nSQL & ORM Queries"]
-        Storage["Storage Engine\nFile & DB Backend"]
+    subgraph Persistence["📦 Persistence Layer"]
+        direction TB
+        Repo["<b>Repository</b><br/>──────────────<br/>+ add()<br/>+ get()<br/>+ update()<br/>+ delete()"]
+        DB["<b>Database Access</b><br/>──────────────<br/>+ execute_query()<br/>+ commit()<br/>+ rollback()"]
+        Storage["<b>Storage Engine</b><br/>──────────────<br/>+ connect()<br/>+ disconnect()<br/>+ backup()"]
     end
 
-    Presentation -->|Facade Pattern| Business
-    Business -->|Facade Pattern| Persistence
+    Presentation -->|"Facade Pattern"| Business
+    Business -->|"Facade Pattern"| Persistence
 ```
+
+
 
 
 
