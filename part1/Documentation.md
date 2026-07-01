@@ -81,11 +81,11 @@ Together, the first two components define the static structure of the system, wh
 
 ---
 
-## 2. - High-Level Package Diagram
+## 2.  High-Level Package Diagram
 
-### Architecture Overview
+### 2.1 The Three Layers
 
-The HBnB Evolution application follows a **three-layer architecture** (Zoom out):
+The HBnB Evolution application follows a The Three Layers (Zoom out):
 
 1. **Presentation Layer**
 2. **Business Logic Layer**
@@ -124,7 +124,7 @@ You Can not skip anylayer.
 
 ---
 
-### The Facade Pattern
+### 2.2 The Facade Pattern
 
 The **Facade Pattern** acts as a simplified interface between layers (The complex subsystem)
 - The Presentation Layer calls the Facade to reach the Business Logic Layer.
@@ -134,7 +134,7 @@ The **Facade Pattern** acts as a simplified interface between layers (The comple
 
 ---
 
-### Package Diagram
+### 2.3 Package Diagram
 
 See the file `package_diagram` in this directory for the visual diagram. 
 
