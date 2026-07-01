@@ -1,7 +1,7 @@
 ## Holberton school -HBnB
  HBnB Evolution 
 
-#Part 1: Technical Documentation 
+# Part 1: Technical Documentation 
 Application Architecture
 
 
@@ -53,7 +53,9 @@ Repository: `holbertonschool-hbnb` — Directory: `part1`
 
 ---
 
+# Part 1 - Technical Documentation
 
+---
 
 ## 1. Introduction
 
@@ -77,20 +79,9 @@ Together, the first two components define the static structure of the system, wh
 
 
 
-
-# Part 1 - Technical Documentation
-
-
 ---
 
-
-## This document provides the technical documentation for the HBnB Evolution application.
-A simplified HBnB-like platform. It covers the overall architecture, the detailed
-design of the business logic, and the interactions within the system.
-
----
-
-## Task 0 - High-Level Package Diagram
+## 2. - High-Level Package Diagram
 
 ### Architecture Overview
 
