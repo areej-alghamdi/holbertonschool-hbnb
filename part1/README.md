@@ -17,7 +17,7 @@ To keep the documentation clean and scannable, each core requirement has been se
 *   **[Full Compilation Document](./Documentation.md):** The comprehensive technical document that combines all notes, business rules, and references.
 *   **[Task 0: Package Diagram](./package_diagram.md):** Details the three-layer architecture (Presentation, Business Logic, and Persistence) and explains the Facade Pattern communication.
 *   **[Task 1: Detailed Class Diagram](./class_diagram.md):** Depicts the core domain models (`User`, `Place`, `Review`, `Amenity`), their methods, attributes, and relationships.
-*   **[Task 2: Sequence Diagrams](./sequence_diagram.md):** Visualizes the step-by-step API calls for User Registration, Place Creation, Review Submission, and Fetching Places.
+*   **[Task 2: Sequence Diagrams](./sequence_diagrams.md):** Visualizes the step-by-step API calls for User Registration, Place Creation, Review Submission, and Fetching Places.
 
 ---
 
