@@ -91,3 +91,18 @@ sequenceDiagram
     P->>U: Send Response
 ```
 
+### 3. The Facade Pattern
+
+The Facade Pattern acts as the communication bridge between the layers:
+
+* The **User** never talks directly to the database.
+* The **Presentation Layer** sends requests through the Facade 
+  to reach the Business Logic Layer.
+* The **Business Logic Layer** sends data through the Facade 
+  to reach the Persistence Layer.
+* Each layer only knows about the layer directly next to it.
+* This keeps the code clean, organized, and easy to maintain.
+* If we change the database in the future, only the Persistence 
+  Layer needs to change — the other layers are not affected.
+
+  
