@@ -447,8 +447,10 @@ Explanatory Notes:
 * **Purpose:** To load all existing properties so they can be viewed on the front-end client interface.
 * **Design Decision:** This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
 
-  ##Authors:
+  ## Authors:
   
-  -Haad Al-Qhtani    <Email>
-  -Areej Al-Ghamdi   <areejaa12@gmail.com>
-  -Hadeel Al-Qhtani  <hadeel.alqhtani206@gmail.com>
+  - Haad Al-Qhtani    <Email>
+  
+  - Areej Al-Ghamdi   <areejaa12@gmail.com>
+  
+  - Hadeel Al-Qhtani  <hadeel.alqhtani206@gmail.com>
