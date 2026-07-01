@@ -81,7 +81,7 @@ Together, the first two components define the static structure of the system, wh
 
 ---
 
-## 2.  High-Level Architecture
+##2. High-Level-Architecture
 
 ### 2.1 The Three Layers
 
