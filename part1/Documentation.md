@@ -1,5 +1,8 @@
-# HBnB Evolution — Part 1: Technical Documentation
+## Holberton school -HBnB
+ HBnB Evolution 
 
+# Part 1: Technical Documentation 
+Application Architecture
 
 
 **High-Level Architecture, Business Logic Design, and API Interaction Flows**
@@ -50,19 +53,21 @@ Repository: `holbertonschool-hbnb` — Directory: `part1`
 
 ---
 
+# Part 1 - Technical Documentation
 
+---
 
 ## 1. Introduction
 
 
 
-This document outlines the technical architecture for Phase 1 of HBnB Evolution—a lightweight property rental platform. The system establishes the foundational mechanics for user registration, real estate listing creation ("places"), stay feedback (reviews), and feature options (amenities).
+This document outlines the technical architecture for Phase 1 of HBnB Evolution—a lightweight property rental platform.a simplified platform inspired by AirBnB. 
+The objective of this phase is to layout a solid foundation detailing the high-level architecture, business entities, core logic, and step-by-step system interactions across all runtime operations.
+The system establishes the foundational mechanics for user registration, real estate listing creation ("places"), stay feedback (reviews), and feature options (amenities).
 
 The purpose of this blueprint is to cement the core design before any development begins. This ensures that Phase 2 (API Delivery) and Phase 3 (Database Integration) build upon a structured framework rather than an improvised codebase.
 
 The platform is specified from three distinct perspectives:
-
-
 
 -A Package Diagram: Illustrating the vertical layer configurations.
 
@@ -71,6 +76,137 @@ The platform is specified from three distinct perspectives:
 -Sequence Diagrams: Tracing the runtime data flows during primary API operations.
 
 Together, the first two components define the static structure of the system, while the third illustrates its dynamic runtime behavior, providing a complete view of the application and its data flows.
+
+
+
+---
+
+## 2. High-Level Architecture
+
+### 2.1 The Three Layers
+
+The HBnB Evolution application follows a The Three Layers (Zoom out):
+
+1. **Presentation Layer**
+2. **Business Logic Layer**
+3. **Persistence Layer**
+
+Each layer communicates with the one directly below it through the **Facade Pattern**.
+You Can not skip anylayer.
+---
+
+### Layer Descriptions
+
+#### 1. Presentation Layer
+- **Responsibility:** Handles all user-facing interactions.
+- **Components:**
+  - REST API (routes and endpoints)
+  - Services (request handling)
+  - Auth / Session (token validation)
+- **Rule:** This layer does NOT contain business rules such as (Data validation and Entity Relationship Rules),and does NOT access the database directly.
+
+#### 2. Business Logic Layer
+- **Responsibility:** Contains the core models and rules of the application.
+- **Components:**
+  - **User** - handles registration and profile updates
+  - **Place** - handles property listings and management
+  - **Review** - handles ratings and comments
+  - **Amenity** - handles features associated with places
+- **Rule:** This layer does NOT know about HTTP or the database. It only applies business rules.
+
+#### 3. Persistence Layer
+- **Responsibility:** Stores and retrieves all data (The complex subsystem)
+- **Components:**
+  - Repository (CRUD operations)
+  - Database Access (SQL / ORM queries)
+  - Storage Engine (file or database backend)
+- **Rule:** This layer does NOT apply rules. It only saves and loads data.
+
+---
+
+### 2.2 The Facade Pattern
+
+The **Facade Pattern** acts as a simplified interface between layers (The complex subsystem)
+- The Presentation Layer calls the Facade to reach the Business Logic Layer.
+- The Business Logic Layer calls the Facade to reach the Persistence Layer.
+- No layer skips another. This keeps the code organized and easy to maintain.
+-The Facade layer hides this complexity from the Service or API layer, so the rest of the application doesn't need to know how or where data is being saved.
+
+*for more details (if you wish) you can see the relationship between the Facade Pattern flow and the the three layers of package diagram in the package_diagram.md file.
+
+---
+
+### 2.3 Package Diagram
+
+See below The `package_diagram` 
+
+---
+This diagram shows the three-layer architecture of the HBnB application
+and how the layers communicate via the Facade Pattern.
+
+```mermaid
+graph TD
+    subgraph Presentation[" Presentation Layer"]
+        direction TB
+        API["<b>REST API</b><br/>──────────────<br/>+ register_user()<br/>+ create_place()<br/>+ submit_review()<br/>+ get_places()"]
+        Services["<b>Services</b><br/>──────────────<br/>+ handle_request()<br/>+ validate_input()<br/>+ format_response()"]
+        Auth["<b>Auth & Session</b><br/>──────────────<br/>+ login()<br/>+ logout()<br/>+ validate_token()"]
+    end
+
+    subgraph Business["  Business Logic Layer"]
+        direction TB
+        User["<b>User Model</b><br/>──────────────<br/>- id<br/>- first_name<br/>- last_name<br/>- email<br/>──────────────<br/>+ register()<br/>+ update_profile()<br/>+ delete()"]
+        Place["<b>Place Model</b><br/>──────────────<br/>- id<br/>- title<br/>- price<br/>- latitude<br/>- longitude<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
+        Review["<b>Review Model</b><br/>──────────────<br/>- id<br/>- rating<br/>- comment<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
+        Amenity["<b>Amenity Model</b><br/>──────────────<br/>- id<br/>- name<br/>- description<br/>──────────────<br/>+ create()<br/>+ update()<br/>+ delete()"]
+    end
+
+    subgraph Persistence["  Persistence Layer"]
+        direction TB
+        Repo["<b>Repository</b><br/>──────────────<br/>+ add()<br/>+ get()<br/>+ update()<br/>+ delete()"]
+        DB["<b>Database Access</b><br/>──────────────<br/>+ execute_query()<br/>+ commit()<br/>+ rollback()"]
+        Storage["<b>Storage Engine</b><br/>──────────────<br/>+ connect()<br/>+ disconnect()<br/>+ backup()"]
+    end
+
+    Presentation -->|"Facade Pattern"| Business
+    Business -->|"Facade Pattern"| Persistence
+```
+
+
+
+
+
+## Explanatory Notes
+
+### 1. Layers Overview
+
+* **Presentation Layer:** This is the entry point of the application. It handles all 
+incoming HTTP requests from the user through the REST API, manages services for request 
+handling, and validates user authentication via session tokens.
+
+* **Business Logic Layer:** This is the brain of the application. It contains the core 
+models and rules that drive the system:
+    * **User** - manages user registration and profile updates
+    * **Place** - manages property listings and their details
+    * **Review** - manages ratings and comments left by users
+    * **Amenity** - manages features that can be associated with places
+
+* **Persistence Layer:** This layer is responsible for storing and retrieving all 
+application data. It contains the repository for CRUD operations, database access 
+for SQL and ORM queries, and the storage engine that connects to the file or 
+database backend.
+
+### 2. Communication Between Layers
+
+The layers communicate through the **Facade Pattern**, which acts as a simplified 
+interface between each layer:
+
+* The **Presentation Layer** never accesses the database directly. Instead it calls 
+the Facade to reach the Business Logic Layer.
+* The **Business Logic Layer** never writes to the database directly. Instead it calls 
+the Facade to reach the Persistence Layer.
+* This ensures each layer has one clear responsibility and changes in one layer do 
+not break the others.
 
 
 
@@ -215,9 +351,10 @@ sequenceDiagram
     deactivate BL
 ```
 
+    
     Explanatory Notes:
-Purpose: To register new users safely and prevent duplicate accounts with the same email.
-Design Decision: The Business Logic Layer requests the database to verify the email first. If the email exists, the system stops the process and returns an HTTP 400 Bad Request error immediately.
+* **Purpose:** register new users safely and prevent duplicate accounts with the same email.
+* **Design Decision:** The Business Logic Layer requests the database to verify the email first. If the email exists, the system stops the process and returns an HTTP 400 Bad Request error immediately.
 
 ### 4.2 Place Creation
 This diagram tracks the steps required when an authorized user creates a new property listing (place). The place must be linked to a valid user who acts as the owner.
@@ -243,9 +380,10 @@ sequenceDiagram
     API-->>Client: HTTP 201 Created (Success Response).
 ```
 
+   
     Explanatory Notes:
-Purpose: To create a property listing and assign it to the correct owner.
-Design Decision: The system contacts the database to ensure the owner_id exists before initializing the Place Model. Then, it validates specific attributes like price and coordinates before saving the record.
+* **Purpose:** create a property listing and assign it to the correct owner.
+* **Design Decision:** The system contacts the database to ensure the owner_id exists before initializing the Place Model. Then, it validates specific attributes like price and coordinates before saving the record.
 
 
 ### 4.3 Review Submission
@@ -279,9 +417,10 @@ sequenceDiagram
     end
     deactivate BL
 ```
+
 Explanatory Notes:
-Purpose: To handle user feedback and connect the review safely to both the user and the place.
-Design Decision: Dual validation is required. If either the user_id or place_id is not found in the database, the system rejects the request and returns an HTTP 404 Not Found error.
+* **Purpose:** To handle user feedback and connect the review safely to both the user and the place.
+* **Design Decision:** Dual validation is required. If either the user_id or place_id is not found in the database, the system rejects the request and returns an HTTP 404 Not Found error.
 
 ### 4.4 Fetching a List of Places
 This diagram outlines the process of retrieving all property listings from the system.
@@ -293,6 +432,7 @@ sequenceDiagram
     participant Facade as Business Logic (Facade)
     participant DB as Persistence (DB)
 
+
     Client->>API: GET /api/v1/places
     API->>Facade: get_places()
     activate Facade
@@ -302,6 +442,33 @@ sequenceDiagram
     deactivate Facade
     API-->>Client: HTTP 200 OK (Success Response with Places List)
 ```
+
 Explanatory Notes:
-Purpose: To load all existing properties so they can be viewed on the front-end client interface.
-Design Decision: This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
+* **Purpose:** To load all existing properties so they can be viewed on the front-end client interface.
+* **Design Decision:** This is a simple read operation. The Facade directly passes the request to the Persistence Layer and updates nothing, returning an HTTP 200 OK response with the complete list of places.
+
+  ## Authors:
+  
+  - Ahad Al-Qhtani    <ahaad.14550@gmail.com>
+  
+  - Areej Al-Ghamdi   <areejaa12@gmail.com>
+  
+  - Hadeel Al-Qhtani  <hadeel.alqhtani206@gmail.com>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
