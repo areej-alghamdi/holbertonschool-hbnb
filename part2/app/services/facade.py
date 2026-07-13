@@ -44,21 +44,19 @@ class HBnBFacade:
         if not user:
             return None
             
-        # Update first name
+        validated_data = {}
         if 'first_name' in user_data:
-            user.first_name = user.validate_name(user_data['first_name'], 'first_name')
+            validated_data['first_name'] = user.validate_name(user_data['first_name'], 'first_name')
             
-        # Update last name
         if 'last_name' in user_data:
-            user.last_name = user.validate_name(user_data['last_name'], 'last_name')
+            validated_data['last_name'] = user.validate_name(user_data['last_name'], 'last_name')
             
-        # Update email and check for uniqueness
         if 'email' in user_data:
             new_email = user_data['email']
             if new_email != user.email and self.get_user_by_email(new_email):
                 raise ValueError("Email already registered")
-            user.email = user.validate_email(new_email)
+            validated_data['email'] = user.validate_email(new_email)
             
-        # Save updates
-        self.user_repo.update(user.id, user_data)
+        # Call the update method from BaseModel to update data and timestamps
+        user.update(validated_data)
         return user

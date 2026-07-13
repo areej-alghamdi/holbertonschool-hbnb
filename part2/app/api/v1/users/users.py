@@ -4,11 +4,18 @@ from app.services import facade
 
 api = Namespace('users', description='User operations')
 
-# Define the user model for input validation and Swagger documentation
+# Base input model for user creation
 user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email address of the user')
+})
+
+# Update model with optional fields to avoid 400 errors during PUT validation
+user_update_model = api.model('UserUpdate', {
+    'first_name': fields.String(description='First name of the user'),
+    'last_name': fields.String(description='Last name of the user'),
+    'email': fields.String(description='Email address of the user')
 })
 
 @api.route('/')
@@ -58,7 +65,7 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
-    @api.expect(user_model, validate=True)
+    @api.expect(user_update_model, validate=True)
     @api.response(200, 'User successfully updated')
     @api.response(404, 'User not found')
     @api.response(400, 'Email already exists or invalid input')
