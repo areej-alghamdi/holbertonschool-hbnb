@@ -1,43 +1,66 @@
-import uuid
-from datetime import datetime
+from abc import ABC, abstractmethod
 
-class InMemoryRepository:
+# Abstract Base Class representing the Repository Interface
+class Repository(ABC):
+    @abstractmethod
+    def add(self, obj):
+        """Add a new object to the repository."""
+        pass
+
+    @abstractmethod
+    def get(self, obj_id):
+        """Retrieve an object by its unique ID."""
+        pass
+
+    @abstractmethod
+    def get_all(self):
+        """Retrieve all stored objects."""
+        pass
+
+    @abstractmethod
+    def update(self, obj_id, data):
+        """Update an existing object by its ID."""
+        pass
+
+    @abstractmethod
+    def delete(self, obj_id):
+        """Delete an object from the repository."""
+        pass
+
+    @abstractmethod
+    def get_by_attribute(self, attr_name, attr_value):
+        """Retrieve an object by a specific attribute name and value."""
+        pass
+
+
+# Concrete implementation of the Repository Interface using in-memory storage
+class InMemoryRepository(Repository):
     def __init__(self):
-        # Using a simple dictionary to save data in memory for now
         self._storage = {}
 
     def add(self, obj):
-        # Adding the object to our dictionary using its ID as the key
         self._storage[obj.id] = obj
 
     def get(self, obj_id):
-        # Looking up the object by its unique ID
         return self._storage.get(obj_id)
 
     def get_all(self):
-        # Turning the dictionary values into a list to return everything
         return list(self._storage.values())
 
     def update(self, obj_id, data):
-        # Finding the object first, then updating its attributes dynamically
         obj = self.get(obj_id)
         if obj:
-            for key, value in data.items():
-                if hasattr(obj, key):
-                    setattr(obj, key, value)
-            obj.updated_at = datetime.now()
+            # Delegate update responsibility to the model object itself (Separation of Concerns)
+            obj.update(data)
         return obj
 
     def delete(self, obj_id):
-        # Deleting the object from the dictionary if it exists
         if obj_id in self._storage:
             del self._storage[obj_id]
-            return True
-        return False
 
-    def get_by_attribute(self, attr, value):
-        # Searching inside storage for a specific field, like checking an email
+    def get_by_attribute(self, attr_name, attr_value):
+        # Search the storage for an object with a matching attribute value
         for obj in self._storage.values():
-            if getattr(obj, attr, None) == value:
+            if getattr(obj, attr_name, None) == attr_value:
                 return obj
         return None
