@@ -10,9 +10,17 @@ class HBnBFacade:
 
     # --- User Methods ---
     def create_user(self, user_data):
-        if self.user_repo.get_by_attribute("email", user_data.get("email")):
+        email = user_data.get("email")
+        if self.user_repo.get_by_attribute("email", email):
             raise ValueError("Email already exists")
-        user = User(**user_data)
+        
+        # Explicitly building the User object with the password field
+        user = User(
+            first_name=user_data.get('first_name'),
+            last_name=user_data.get('last_name'),
+            email=email,
+            password=user_data.get('password')
+        )
         return self.user_repo.add(user)
 
     def get_user(self, user_id):
