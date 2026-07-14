@@ -1,12 +1,13 @@
 from app.models.base_model import BaseModel
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, is_admin=False):
+    def __init__(self, first_name, last_name, email, password, is_admin=False):
         super().__init__()
         # Validate inputs before assigning them to the object
         self.first_name = self.validate_name(first_name, "first_name")
         self.last_name = self.validate_name(last_name, "last_name")
         self.email = self.validate_email(email)
+        self.password = password  # Added password parameter as requested
         self.is_admin = is_admin
 
     def validate_name(self, name, field_name):

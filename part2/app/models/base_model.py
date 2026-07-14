@@ -1,16 +1,15 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
 class BaseModel:
     def __init__(self):
-        # Generate a unique ID and set creation/update timestamps
         self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        self.created_at = datetime.now(timezone.utc)
+        self.updated_at = datetime.now(timezone.utc)
 
     def save(self):
         """Update the update timestamp whenever the object changes."""
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.now(timezone.utc)
 
     def update(self, data):
         """Update attributes based on a provided dictionary."""

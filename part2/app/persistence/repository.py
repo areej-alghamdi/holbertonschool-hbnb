@@ -40,6 +40,7 @@ class InMemoryRepository(Repository):
 
     def add(self, obj):
         self._storage[obj.id] = obj
+        return obj  # Return the object as requested by mentors for better Facade integration
 
     def get(self, obj_id):
         return self._storage.get(obj_id)
