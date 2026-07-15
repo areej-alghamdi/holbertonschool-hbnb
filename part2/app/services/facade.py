@@ -112,17 +112,17 @@ class HBnBFacade:
         if not place:
             return None
         if 'title' in place_data:
-            place.title = place_data['title']
+            place.title = place.validate_string(place_data['title'], 'title')
         if 'description' in place_data:
             place.description = place_data['description']
         if 'price' in place_data:
-            place.price = place_data['price']
+            place.price = place.validate_price(place_data['price'])
         if 'latitude' in place_data:
-            place.latitude = place_data['latitude']
+            place.latitude = place.validate_latitude(place_data['latitude'])
         if 'longitude' in place_data:
-            place.longitude = place_data['longitude']
-        if 'amenity_ids' in place_data:
-            place.amenity_ids = place_data['amenity_ids']
+            place.longitude = place.validate_longitude(place_data['longitude'])
+        if 'amenities' in place_data:
+            place.amenity_ids = place_data['amenities']
         self.place_repo.update(place_id, place_data)
         return place
 
