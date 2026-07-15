@@ -33,9 +33,9 @@ user_response_model = api.model('UserResponse', {
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
-    @api.marshal_with(user_response_model, code=201)  # Uses response model (No password returned)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already exists or invalid input')
+    @api.marshal_with(user_response_model, code=201)  # Uses response model (No password returned)
     def post(self):
         """Register a new user"""
         user_data = api.payload
@@ -43,10 +43,11 @@ class UserList(Resource):
             new_user = facade.create_user(user_data)
             return new_user, 201
         except ValueError as e:
-            return {'error': str(e)}, 400
+            # استخدام api.abort يضمن خروج رسالة الخطأ وتخطي الـ marshal_with
+            api.abort(400, str(e))
 
-    @api.marshal_list_with(user_response_model)
     @api.response(200, 'List of users successfully retrieved')
+    @api.marshal_list_with(user_response_model)
     def get(self):
         """Retrieve a list of all users"""
         return facade.get_all_users(), 200
@@ -56,8 +57,8 @@ class UserList(Resource):
 @api.param('user_id', 'The user identifier')
 @api.response(404, 'User not found')
 class UserResource(Resource):
-    @api.marshal_with(user_response_model)
     @api.response(200, 'User details successfully retrieved')
+    @api.marshal_with(user_response_model)
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
@@ -66,9 +67,9 @@ class UserResource(Resource):
         return user, 200
 
     @api.expect(user_update_model, validate=True)  # Validates fields based on update model
-    @api.marshal_with(user_response_model)
     @api.response(200, 'User successfully updated')
     @api.response(400, 'Email already exists or invalid input')
+    @api.marshal_with(user_response_model)
     def put(self, user_id):
         """Update user details (Password modification is not allowed here)"""
         user_data = api.payload.copy()
@@ -85,4 +86,4 @@ class UserResource(Resource):
             updated_user = facade.update_user(user_id, user_data)
             return updated_user, 200
         except ValueError as e:
-            return {'error': str(e)}, 400
+            api.abort(400, str(e))

@@ -5,17 +5,20 @@ class Review(BaseModel):
         super().__init__()
         self.text = self.validate_text(text)
         self.rating = self.validate_rating(rating)
-        self.place = place  # Receives the entire Place object
-        self.user = user    # Receives the entire User object
+        self.place = place  # Represents the Place Object directly
+        self.user = user    # Represents the User Object directly
 
     def validate_text(self, text):
-        """Ensure review text is not empty."""
         if not text or not isinstance(text, str) or len(text.strip()) == 0:
             raise ValueError("Review text is required")
         return text.strip()
 
     def validate_rating(self, rating):
-        """Ensure rating is an integer between 1 and 5."""
-        if not isinstance(rating, int) or not (1 <= rating <= 5):
+        if not isinstance(rating, int):
+            try:
+                rating = int(rating)
+            except (TypeError, ValueError):
+                raise ValueError("Rating must be an integer between 1 and 5")
+        if not (1 <= rating <= 5):
             raise ValueError("Rating must be an integer between 1 and 5")
         return rating
