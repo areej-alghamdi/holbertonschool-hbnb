@@ -35,7 +35,7 @@ place_update_model = api.model('PlaceUpdate', {
     'price': fields.Float(description='Price per night'),
     'latitude': fields.Float(description='Latitude of the place'),
     'longitude': fields.Float(description='Longitude of the place'),
-    'amenity_ids': fields.List(fields.String, description='List of amenity IDs')
+    'amenities': fields.List(fields.String, description='List of amenity IDs')
 })
 
 # Response model for detailed Place representation (includes Nested fields)
@@ -82,7 +82,7 @@ class PlaceList(Resource):
             api.abort(404, 'Owner not found')
 
         # Validate amenity IDs if provided
-        amenity_ids = place_data.get('amenity_ids', [])
+        amenity_ids = place_data.get('amenities', [])
         amenities = []
         for amenity_id in amenity_ids:
             amenity = facade.get_amenity(amenity_id)
@@ -153,7 +153,6 @@ class PlaceResource(Resource):
     @api.response(200, 'Place successfully updated')
     @api.response(400, 'Invalid input data')
     @api.response(404, 'Amenity not found')
-    @api.marshal_with(place_list_response_model)
     def put(self, place_id):
         """Update a place's information"""
         place_data = api.payload
@@ -169,7 +168,7 @@ class PlaceResource(Resource):
                 api.abort(404, f'Amenity {amenity_id} not found')
 
         try:
-            updated_place = facade.update_place(place_id, place_data)
-            return updated_place, 200
+            facade.update_place(place_id, place_data)
+            return {"message": "Place updated successfully"}, 200
         except ValueError as e:
             api.abort(400, str(e))
