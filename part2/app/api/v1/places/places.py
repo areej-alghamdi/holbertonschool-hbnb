@@ -25,7 +25,7 @@ place_model = api.model('Place', {
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'owner_id': fields.String(required=True, description='ID of the owner'),
-    'amenity_ids': fields.List(fields.String, description='List of amenity IDs')
+    'amenities': fields.List(fields.String, required=True, description="List of amenities IDs")
 })
 
 # Update model: used for PUT requests (all fields optional)
@@ -67,13 +67,13 @@ place_list_response_model = api.model('PlaceListResponse', {
 
 @api.route('/')
 class PlaceList(Resource):
-    @api.expect(place_model, validate=True)
+    @api.expect(place_model)
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
     @api.response(404, 'Owner or Amenity not found')
     @api.marshal_with(place_response_model, code=201)
     def post(self):
-        """Create a new place"""
+        """Register a new place"""
         place_data = api.payload
 
         # Check that the owner exists
@@ -122,7 +122,7 @@ class PlaceResource(Resource):
     @api.response(200, 'Place details successfully retrieved')
     @api.marshal_with(place_response_model)
     def get(self, place_id):
-        """Get a specific place by ID"""
+        """Get place details by ID"""
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
@@ -141,7 +141,6 @@ class PlaceResource(Resource):
             'id': place.id,
             'title': place.title,
             'description': place.description,
-            'price': place.price,
             'latitude': place.latitude,
             'longitude': place.longitude,
             'owner': owner,
@@ -156,14 +155,14 @@ class PlaceResource(Resource):
     @api.response(404, 'Amenity not found')
     @api.marshal_with(place_list_response_model)
     def put(self, place_id):
-        """Update an existing place"""
+        """Update a place's information"""
         place_data = api.payload
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
 
         # Validate amenity IDs if provided
-        amenity_ids = place_data.get('amenity_ids', [])
+        amenity_ids = place_data.get('amenities', [])
         for amenity_id in amenity_ids:
             amenity = facade.get_amenity(amenity_id)
             if not amenity:
