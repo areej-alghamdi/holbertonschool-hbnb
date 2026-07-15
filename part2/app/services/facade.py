@@ -40,16 +40,20 @@ class HBnBFacade:
         user = self.get_user(user_id)
         if not user:
             return None
+        
+        # Validate first before changing model state
+        validated_data = {}
         if 'first_name' in user_data:
-            user.first_name = user.validate_name(user_data['first_name'], 'first_name')
+            validated_data['first_name'] = user.validate_name(user_data['first_name'], 'first_name')
         if 'last_name' in user_data:
-            user.last_name = user.validate_name(user_data['last_name'], 'last_name')
+            validated_data['last_name'] = user.validate_name(user_data['last_name'], 'last_name')
         if 'email' in user_data:
             new_email = user_data['email']
             if new_email != user.email and self.get_user_by_email(new_email):
                 raise ValueError("Email already registered")
-            user.email = user.validate_email(new_email)
-        self.user_repo.update(user.id, user_data)
+            validated_data['email'] = user.validate_email(new_email)
+            
+        self.user_repo.update(user.id, validated_data)
         return user
 
     # -------------------------
@@ -73,12 +77,15 @@ class HBnBFacade:
         amenity = self.get_amenity(amenity_id)
         if not amenity:
             return None
+        
+        validated_data = {}
         if 'name' in amenity_data:
             name = amenity_data['name']
             if not name or not isinstance(name, str) or len(name.strip()) == 0:
                 raise ValueError("Amenity name is required")
-            amenity.name = name.strip()
-        self.amenity_repo.update(amenity_id, amenity_data)
+            validated_data['name'] = name.strip()
+            
+        self.amenity_repo.update(amenity_id, validated_data)
         return amenity
 
     # -------------------------
@@ -96,8 +103,17 @@ class HBnBFacade:
             longitude=place_data.get('longitude'),
             owner=owner
         )
-        place.owner_id = owner.id
-        place.amenity_ids = place_data.get('amenities', [])
+        
+        # Populate objects for response representation
+        amenity_ids = place_data.get('amenities', [])
+        amenities_objects = []
+        for a_id in amenity_ids:
+            amenity = self.get_amenity(a_id)
+            if amenity:
+                amenities_objects.append(amenity)
+                
+        place.amenities = amenities_objects
+        place.amenity_ids = amenity_ids
         self.place_repo.add(place)
         return place
 
@@ -111,19 +127,30 @@ class HBnBFacade:
         place = self.get_place(place_id)
         if not place:
             return None
+        
+        validated_data = {}
         if 'title' in place_data:
-            place.title = place.validate_string(place_data['title'], 'title')
+            validated_data['title'] = place.validate_string(place_data['title'], 'title')
         if 'description' in place_data:
-            place.description = place_data['description']
+            validated_data['description'] = place_data['description']
         if 'price' in place_data:
-            place.price = place.validate_price(place_data['price'])
+            validated_data['price'] = place.validate_price(place_data['price'])
         if 'latitude' in place_data:
-            place.latitude = place.validate_latitude(place_data['latitude'])
+            validated_data['latitude'] = place.validate_latitude(place_data['latitude'])
         if 'longitude' in place_data:
-            place.longitude = place.validate_longitude(place_data['longitude'])
+            validated_data['longitude'] = place.validate_longitude(place_data['longitude'])
+            
         if 'amenities' in place_data:
-            place.amenity_ids = place_data['amenities']
-        self.place_repo.update(place_id, place_data)
+            amenity_ids = place_data['amenities']
+            amenities_objects = []
+            for a_id in amenity_ids:
+                amenity = self.get_amenity(a_id)
+                if amenity:
+                    amenities_objects.append(amenity)
+            place.amenities = amenities_objects
+            place.amenity_ids = amenity_ids
+
+        self.place_repo.update(place_id, validated_data)
         return place
 
     # -------------------------
@@ -139,8 +166,8 @@ class HBnBFacade:
         review = Review(
             text=review_data.get('text'),
             rating=review_data.get('rating'),
-            place=place,  # Directly assign the Place Object
-            user=user     # Directly assign the User Object
+            place=place,
+            user=user
         )
         self.review_repo.add(review)
         return review
@@ -159,11 +186,14 @@ class HBnBFacade:
         review = self.get_review(review_id)
         if not review:
             return None
+        
+        validated_data = {}
         if 'text' in review_data:
-            review.text = review.validate_text(review_data['text'])
+            validated_data['text'] = review.validate_text(review_data['text'])
         if 'rating' in review_data:
-            review.rating = review.validate_rating(review_data['rating'])
-        self.review_repo.update(review_id, review_data)
+            validated_data['rating'] = review.validate_rating(review_data['rating'])
+            
+        self.review_repo.update(review_id, validated_data)
         return review
 
     def delete_review(self, review_id):

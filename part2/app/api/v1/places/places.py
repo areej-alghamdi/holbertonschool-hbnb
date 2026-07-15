@@ -1,7 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 
-# Create the places namespace
 api = Namespace('places', description='Place operations')
 
 # Related Models for nested response representation
@@ -28,7 +27,7 @@ place_model = api.model('Place', {
     'amenities': fields.List(fields.String, required=True, description="List of amenities IDs")
 })
 
-# Update model: used for PUT requests (all fields optional)
+# Update model: used for PUT requests
 place_update_model = api.model('PlaceUpdate', {
     'title': fields.String(description='Title of the place'),
     'description': fields.String(description='Description of the place'),
@@ -38,7 +37,7 @@ place_update_model = api.model('PlaceUpdate', {
     'amenities': fields.List(fields.String, description='List of amenity IDs')
 })
 
-# Response model for detailed Place representation (includes Nested fields)
+# Response model for detailed Place representation
 place_response_model = api.model('PlaceResponse', {
     'id': fields.String(description='Unique identifier of the place'),
     'title': fields.String(description='Title of the place'),
@@ -48,11 +47,11 @@ place_response_model = api.model('PlaceResponse', {
     'longitude': fields.Float(description='Longitude of the place'),
     'owner': fields.Nested(place_owner_model, description='Owner details'),
     'amenities': fields.List(fields.Nested(place_amenity_model), description='List of amenities'),
-    'created_at': fields.String(description='Creation timestamp'),
-    'updated_at': fields.String(description='Last update timestamp')
+    'created_at': fields.DateTime(description='Creation timestamp'),
+    'updated_at': fields.DateTime(description='Last update timestamp')
 })
 
-# Response model for listing Places (simplified)
+# Response model for listing Places
 place_list_response_model = api.model('PlaceListResponse', {
     'id': fields.String(description='Unique identifier of the place'),
     'title': fields.String(description='Title of the place'),
@@ -60,8 +59,8 @@ place_list_response_model = api.model('PlaceListResponse', {
     'price': fields.Float(description='Price per night'),
     'latitude': fields.Float(description='Latitude of the place'),
     'longitude': fields.Float(description='Longitude of the place'),
-    'created_at': fields.String(description='Creation timestamp'),
-    'updated_at': fields.String(description='Last update timestamp')
+    'created_at': fields.DateTime(description='Creation timestamp'),
+    'updated_at': fields.DateTime(description='Last update timestamp')
 })
 
 
@@ -83,28 +82,14 @@ class PlaceList(Resource):
 
         # Validate amenity IDs if provided
         amenity_ids = place_data.get('amenities', [])
-        amenities = []
         for amenity_id in amenity_ids:
             amenity = facade.get_amenity(amenity_id)
             if not amenity:
                 api.abort(404, f'Amenity {amenity_id} not found')
-            amenities.append(amenity)
 
         try:
             new_place = facade.create_place(place_data)
-            # Match the response data to the place_response_model expectations
-            return {
-                'id': new_place.id,
-                'title': new_place.title,
-                'description': new_place.description,
-                'price': new_place.price,
-                'latitude': new_place.latitude,
-                'longitude': new_place.longitude,
-                'owner': owner,
-                'amenities': amenities,
-                'created_at': str(new_place.created_at),
-                'updated_at': str(new_place.updated_at)
-            }, 201
+            return new_place, 201
         except ValueError as e:
             api.abort(400, str(e))
 
@@ -126,33 +111,13 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
-
-        # Get owner details
-        owner = facade.get_user(place.owner_id)
-
-        # Get amenity details
-        amenities = []
-        for amenity_id in getattr(place, 'amenity_ids', []):
-            amenity = facade.get_amenity(amenity_id)
-            if amenity:
-                amenities.append(amenity)
-
-        return {
-            'id': place.id,
-            'title': place.title,
-            'description': place.description,
-            'latitude': place.latitude,
-            'longitude': place.longitude,
-            'owner': owner,
-            'amenities': amenities,
-            'created_at': str(place.created_at),
-            'updated_at': str(place.updated_at)
-        }, 200
+        return place, 200
 
     @api.expect(place_update_model, validate=True)
     @api.response(200, 'Place successfully updated')
     @api.response(400, 'Invalid input data')
     @api.response(404, 'Amenity not found')
+    @api.marshal_with(place_response_model)
     def put(self, place_id):
         """Update a place's information"""
         place_data = api.payload
@@ -168,7 +133,7 @@ class PlaceResource(Resource):
                 api.abort(404, f'Amenity {amenity_id} not found')
 
         try:
-            facade.update_place(place_id, place_data)
-            return {"message": "Place updated successfully"}, 200
+            updated_place = facade.update_place(place_id, place_data)
+            return updated_place, 200
         except ValueError as e:
             api.abort(400, str(e))
