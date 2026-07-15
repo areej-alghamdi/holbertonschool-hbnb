@@ -66,7 +66,7 @@ place_list_response_model = api.model('PlaceListResponse', {
 
 @api.route('/')
 class PlaceList(Resource):
-    @api.expect(place_model)
+    @api.expect(place_model, validate=True)  
     @api.response(201, 'Place successfully created')
     @api.response(400, 'Invalid input data')
     @api.response(404, 'Owner or Amenity not found')
@@ -113,7 +113,7 @@ class PlaceResource(Resource):
             api.abort(404, "Place not found")
         return place, 200
 
-    @api.expect(place_update_model, validate=True)
+    @api.expect(place_update_model, validate=True)  
     @api.response(200, 'Place successfully updated')
     @api.response(400, 'Invalid input data')
     @api.response(404, 'Amenity not found')
