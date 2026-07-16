@@ -9,16 +9,6 @@ In this part, we transition from conceptual diagrams to actual software design. 
 
 ---
 
-## 🎯 2. Project Vision
-Our vision for the HBnB platform is to build a fully decoupled, secure, and highly scalable custom application. 
-
-By applying a **Layered Architecture**, we decouple our core business logic from the specific storage mechanism (in-memory, SQL, etc.) and presentation details (web servers). This guarantees that our platform is:
-*   **Scalable:** Easy to add new modules and services without breaking existing ones.
-*   **Maintainable:** Every component has one distinct responsibility.
-*   **Testable:** The modular logic allows robust automated testing for every component.
-
----
-
 ## 🎓 3. Learning Objectives
 By completing this phase of the project, we have successfully achieved the following technical milestones:
 *   **Layered Architectural Implementation:** Constructing and maintaining separation between the Presentation, Business Logic, and Persistence Layers.
