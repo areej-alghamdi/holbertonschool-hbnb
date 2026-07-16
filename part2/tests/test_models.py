@@ -1,49 +1,68 @@
 import unittest
-from app.models.user import User
-from app.models.place import Place
-from app.models.review import Review
-from app.models.amenity import Amenity
+from app import create_app
 
-class TestModelValidations(unittest.TestCase):
+class TestHBnBAPI(unittest.TestCase):
 
     def setUp(self):
-        self.valid_user = User(
-            first_name="John", 
-            last_name="Doe", 
-            email="john.doe@example.com", 
-            password="securepassword123"
-        )
-        self.valid_place = Place(
-            title="Cozy Apartment", 
-            description="A nice place", 
-            price=100.0, 
-            latitude=45.0, 
-            longitude=90.0, 
-            owner=self.valid_user
-        )
+        self.app = create_app()
+        self.client = self.app.test_client()
+        self.app_context = self.app.app_context()
+        self.app_context.push()
 
-    def test_review_creation_success(self):
-        review = Review(text="Amazing stay!", rating=5, place_id="place-123", user_id="user-123")
-        self.assertEqual(review.text, "Amazing stay!")
-        self.assertEqual(review.rating, 5)
+    def tearDown(self):
+        self.app_context.pop()
 
-    def test_review_empty_text_raises_value_error(self):
-        with self.assertRaises(ValueError):
-            Review(text="   ", rating=5, place_id="place-123", user_id="user-123")
+    def test_create_user_success(self):
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "Alice",
+            "last_name": "Smith",
+            "email": "alice.smith@example.com"
+        })
+        self.assertEqual(response.status_code, 201)
+        self.assertIn("id", response.get_json())
 
-    def test_review_invalid_rating_raises_value_error(self):
-        with self.assertRaises(ValueError):
-            Review(text="Good", rating=6, place_id="place-123", user_id="user-123")
-        with self.assertRaises(ValueError):
-            Review(text="Bad", rating=0, place_id="place-123", user_id="user-123")
+    def test_create_user_invalid_email(self):
+        response = self.client.post('/api/v1/users/', json={
+            "first_name": "Alice",
+            "last_name": "Smith",
+            "email": "invalid-email-format"
+        })
+        self.assertEqual(response.status_code, 400)
 
-    def test_user_invalid_email_raises_value_error(self):
-        with self.assertRaises(ValueError):
-            User(first_name="Jane", last_name="Doe", email="invalid-email", password="123456")
+    def test_create_amenity_success(self):
+        response = self.client.post('/api/v1/amenities/', json={
+            "name": "WiFi"
+        })
+        self.assertEqual(response.status_code, 201)
 
-    def test_place_invalid_coords_raises_value_error(self):
-        with self.assertRaises(ValueError):
-            Place("Hotel", "Desc", 150, latitude=95.0, longitude=45.0, owner=self.valid_user)
+    def test_create_place_invalid_price(self):
+        response = self.client.post('/api/v1/places/', json={
+            "title": "Beach House",
+            "price": -10.5,
+            "latitude": 34.05,
+            "longitude": -118.24,
+            "owner_id": "some-user-id"
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_place_out_of_bounds_latitude(self):
+        response = self.client.post('/api/v1/places/', json={
+            "title": "Mountain Cabin",
+            "price": 150.0,
+            "latitude": 95.0,
+            "longitude": 45.0,
+            "owner_id": "some-user-id"
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_create_review_invalid_rating(self):
+        response = self.client.post('/api/v1/reviews/', json={
+            "text": "Great experience!",
+            "rating": 6,
+            "user_id": "some-user-id",
+            "place_id": "some-place-id"
+        })
+        self.assertEqual(response.status_code, 400)
 
 if __name__ == '__main__':
     unittest.main()
