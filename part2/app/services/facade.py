@@ -148,3 +148,75 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, validated_data)
         return place
+
+    from app.models.review import Review
+
+class HBnBFacade:
+    def __init__(self):
+        self.user_repo = InMemoryRepository()
+        self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
+
+    def create_review(self, review_data):
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+        rating = review_data.get('rating')
+        text = review_data.get('text', '')
+
+        user = self.get_user(user_id)
+        if not user:
+            raise ValueError("User not found")
+
+        place = self.get_place(place_id)
+        if not place:
+            raise ValueError("Place not found")
+
+        if not text.strip():
+            raise ValueError("Review text cannot be empty")
+        if not (1 <= rating <= 5):
+            raise ValueError("Rating must be between 1 and 5")
+
+        review = Review(
+            text=text,
+            rating=rating,
+            place_id=place_id,
+            user_id=user_id
+        )
+        return self.review_repo.add(review)
+
+    def get_review(self, review_id):
+        return self.review_repo.get(review_id)
+
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
+
+    def get_reviews_by_place(self, place_id):
+        place = self.get_place(place_id)
+        if not place:
+            return None
+        all_reviews = self.review_repo.get_all()
+        return [r for r in all_reviews if r.place_id == place_id]
+
+    def update_review(self, review_id, review_data):
+        review = self.get_review(review_id)
+        if not review:
+            return None
+
+        rating = review_data.get('rating')
+        text = review_data.get('text')
+
+        if text is not None and not text.strip():
+            raise ValueError("Review text cannot be empty")
+        if rating is not None and not (1 <= rating <= 5):
+            raise ValueError("Rating must be between 1 and 5")
+
+        return self.review_repo.update(review_id, review_data)
+
+    def delete_review(self, review_id):
+        review = self.get_review(review_id)
+        if not review:
+            return False
+        if review_id in self.review_repo._storage:
+            del self.review_repo._storage[review_id]
+            return True
+        return False

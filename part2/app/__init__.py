@@ -19,3 +19,10 @@ def create_app():
     api.add_namespace(places_ns, path='/api/v1/places')
  
     return app
+# Register namespace in your create_app function
+from app.api.v1.reviews import api as reviews_ns
+
+def create_app():
+    # ... existing flask setup
+    api.add_namespace(reviews_ns, path='/api/v1/reviews')
+    # ... return app
