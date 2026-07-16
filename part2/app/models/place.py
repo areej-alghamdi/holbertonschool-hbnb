@@ -34,3 +34,26 @@ class Place(BaseModel):
         if not isinstance(lon, (int, float)) or not (-180.0 <= lon <= 180.0):
             raise ValueError("Longitude must be between -180.0 and 180.0")
         return lon
+     def add_review(self, review):
+        """Add review to place."""
+        # Imported locally to avoid a circular import: review.py
+        # already imports Place at module load time.
+        from app.models.review import Review
+        if not isinstance(review, Review):
+            raise TypeError("review must be a Review")
+        self.reviews.append(review)
+
+    def add_amenity(self, amenity):
+        """Add amenity to place."""
+        if not isinstance(amenity, Amenity):
+            raise TypeError("amenity must be an Amenity")
+        self.amenities.append(amenity)
+
+    def to_dict(self):
+        """Return dictionary representation with flattened relationships."""
+        data = super().to_dict()
+        data.pop("owner", None)
+        data["owner_id"] = self.owner_id
+        data["reviews"] = [review.id for review in self.reviews]
+        data["amenities"] = [amenity.id for amenity in self.amenities]
+        return data
