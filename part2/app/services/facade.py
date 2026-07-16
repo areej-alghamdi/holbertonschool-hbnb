@@ -148,109 +148,71 @@ class HBnBFacade:
 
         self.place_repo.update(place_id, validated_data)
         return place
-
-    from app.models.review import Review
-
-class HBnBFacade:
-    def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
-
+       # --- Review Operations ---
     def create_review(self, review_data):
-        user_id = review_data.get('user_id')
+        """Create a review for a place.
+
+        Takes a single review_data dict (matching the pattern used by
+        every other create_* method) -- place_id/user_id are read out
+        of it internally, not passed as separate arguments.
+
+        Validates that both the place and the user exist before
+        creating the review.
+        """
         place_id = review_data.get('place_id')
-        rating = review_data.get('rating')
-        text = review_data.get('text', '')
-
-        user = self.get_user(user_id)
-        if not user:
-            raise ValueError("User not found")
-
-        place = self.get_place(place_id)
+        place = self.place_repo.get(place_id)
         if not place:
-            raise ValueError("Place not found")
+            raise ValueError("Place does not exist")
 
-        if not text.strip():
-            raise ValueError("Review text cannot be empty")
-        if not (1 <= rating <= 5):
-            raise ValueError("Rating must be between 1 and 5")
+        user_id = review_data.get('user_id')
+        user = self.user_repo.get(user_id)
+        if not user:
+            raise ValueError("User does not exist")
 
-        review = Review(
-            text=text,
-            rating=rating,
-            place_id=place_id,
-            user_id=user_id
-        )
-        return self.review_repo.add(review)
+        # Create review with the actual Place and User objects
+        review_data_copy = review_data.copy()
+        review_data_copy.pop('user_id', None)
+        review_data_copy.pop('place_id', None)
+        review_data_copy['user'] = user
+        review_data_copy['place'] = place
+
+        review = Review(**review_data_copy)
+        self.review_repo.add(review)
+        place.add_review(review)
+        return review
 
     def get_review(self, review_id):
+        """Fetch a review by ID."""
         return self.review_repo.get(review_id)
 
     def get_all_reviews(self):
+        """Retrieve all reviews."""
         return self.review_repo.get_all()
 
     def get_reviews_by_place(self, place_id):
-        place = self.get_place(place_id)
-        if not place:
-            return None
-        all_reviews = self.review_repo.get_all()
-        return [r for r in all_reviews if r.place_id == place_id]
+        """List all reviews for a specific place."""
+        reviews = self.review_repo.get_all()
+        return [r for r in reviews if r.place_id == place_id]
 
     def update_review(self, review_id, review_data):
-        review = self.get_review(review_id)
+        """Update an existing review.
+
+        Only text/rating are updatable through this endpoint -- place
+        and user are fixed at creation time, so place_id/user_id are
+        never passed to review.update() even if a client sends them.
+        """
+        review = self.review_repo.get(review_id)
         if not review:
             return None
-
-        rating = review_data.get('rating')
-        text = review_data.get('text')
-
-        if text is not None and not text.strip():
-            raise ValueError("Review text cannot be empty")
-        if rating is not None and not (1 <= rating <= 5):
-            raise ValueError("Rating must be between 1 and 5")
-
-        return self.review_repo.update(review_id, review_data)
+        allowed = {'text', 'rating'}
+        review.update({k: v for k, v in review_data.items() if k in allowed})
+        return review
 
     def delete_review(self, review_id):
-        review = self.get_review(review_id)
-        if not review:
-            return False
-        if review_id in self.review_repo._storage:
-            del self.review_repo._storage[review_id]
-            return True
-        return False
-    def create_place(self, place_data):
-        # 
-        owner = self.get_user(place_data.get('owner_id'))
-        if not owner:
-            raise ValueError("Owner (User) not found")
-
-        # 
-        place = Place(
-            title=place_data['title'],
-            price=place_data['price'],
-            latitude=place_data['latitude'],
-            longitude=place_data['longitude'],
-            owner_id=place_data['owner_id'],
-            description=place_data.get('description', '')
-        )
-        return self.place_repo.add(place)
-
-    def create_review(self, review_data):
-        # 
-        user = self.get_user(review_data.get('user_id'))
-        if not user:
-            raise ValueError("User not found")
-
-        place = self.get_place(review_data.get('place_id'))
-        if not place:
-            raise ValueError("Place not found")
-
-        review = Review(
-            text=review_data['text'],
-            rating=review_data['rating'],
-            place_id=review_data['place_id'],
-            user_id=review_data['user_id']
-        )
-        return self.review_repo.add(review)
+        """Delete a review by ID, also unlinking it from its place."""
+        review = self.review_repo.get(review_id)
+        if review:
+            place = self.place_repo.get(review.place_id)
+            if place and review in place.reviews:
+                place.reviews.remove(review)
+        self.review_repo.delete(review_id)
