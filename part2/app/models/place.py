@@ -34,7 +34,7 @@ class Place(BaseModel):
         if not isinstance(lon, (int, float)) or not (-180.0 <= lon <= 180.0):
             raise ValueError("Longitude must be between -180.0 and 180.0")
         return lon
-     def add_review(self, review):
+    def add_review(self, review):
         """Add review to place."""
         # Imported locally to avoid a circular import: review.py
         # already imports Place at module load time.
@@ -45,6 +45,7 @@ class Place(BaseModel):
 
     def add_amenity(self, amenity):
         """Add amenity to place."""
+        from app.models.amenity import Amenity
         if not isinstance(amenity, Amenity):
             raise TypeError("amenity must be an Amenity")
         self.amenities.append(amenity)

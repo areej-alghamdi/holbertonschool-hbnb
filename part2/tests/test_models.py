@@ -16,7 +16,8 @@ class TestHBnBAPI(unittest.TestCase):
         response = self.client.post('/api/v1/users/', json={
             "first_name": "Alice",
             "last_name": "Smith",
-            "email": "alice.smith@example.com"
+            "email": "alice.smith@example.com",
+            "password": "SecurePass99"
         })
         self.assertEqual(response.status_code, 201)
         self.assertIn("id", response.get_json())
