@@ -150,3 +150,27 @@ class PlaceReviewList(Resource):
             'rating': r.rating,
             'user_id': r.user_id
         } for r in reviews], 200
+
+        review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
+})
+
+
+@api.route('/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        reviews = facade.get_reviews_by_place(place_id)
+        if reviews is None:
+            return {"error": "Place not found"}, 404
+
+        return [{
+            "id": r.id,
+            "text": r.text,
+            "rating": r.rating,
+            "user_id": r.user_id
+        } for r in reviews], 200
