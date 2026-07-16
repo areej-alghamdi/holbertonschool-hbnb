@@ -41,8 +41,9 @@ The backend of HBnB is structured following strict software engineering principl
   |                      Persistence Layer                      |
   |                (In-Memory Repository Pattern)               |
   +-------------------------------------------------------------+
+```
 
-The Facade Pattern
+### The Facade Pattern
 To avoid tight coupling between our API endpoints and our database/models, we implemented the Facade Pattern via ServiceFacade. All presentation-layer requests communicate exclusively with this facade, which manages interaction with the underlying models and repositories.
 
 ## 📋 4. Business & Validation Rules
@@ -89,24 +90,45 @@ The RESTful API provides a standard interface for all operations. *(Note: DELETE
 
 ## 🛠️ 6. Installation & Running
 
-Follow these steps to set up and run the HBnB project locally:
+Follow these steps to set up and run the HBnB project locally.
 
 ### 1. Clone the Repository
-```bash
-git clone [https://github.com/areej-alghamdi/holbertonschool-hbnb.git](https://github.com/areej-alghamdi/holbertonschool-hbnb.git)
-cd holbertonschool-hbnb/part2
 
-###2. Configure Virtual Environment
+```bash
+git clone https://github.com/areej-alghamdi/holbertonschool-hbnb.git
+cd holbertonschool-hbnb/part2
+```
+
+### 2. Configure Virtual Environment
+
+```bash
 python3 -m venv venv
 source venv/bin/activate
+```
 
-###3. Install Dependencies
+### 3. Install Dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
-###4. Run the Application
+### 4. Run the Application
+
+```bash
 python3 run.py
+```
 
-*The server will start running locally at **http://127.0.0.1:5000**. You can navigate there to interact with the endpoints directly through the automated **Swagger UI**.*
+The server will start at:
+
+```text
+http://127.0.0.1:5000
+```
+
+Swagger documentation is available at:
+
+```text
+http://127.0.0.1:5000/
+```
 
 ---
 
