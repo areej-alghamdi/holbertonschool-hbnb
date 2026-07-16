@@ -85,3 +85,37 @@ class UserResource(Resource):
             return updated_user, 200
         except ValueError as e:
             api.abort(400, str(e))
+            from flask_restx import Namespace, Resource, fields
+from flask import request
+from app.models.user import User
+
+api = Namespace('users', description='User operations')
+
+user_model = api.model('User', {
+    'first_name': fields.String(required=True),
+    'last_name': fields.String(required=True),
+    'email': fields.String(required=True),
+    'password': fields.String(required=True)
+})
+
+@api.route('/')
+class UserList(Resource):
+
+    @api.expect(user_model, validate=True)
+    def post(self):
+        data = request.json
+        try:
+            new_user = User(
+                first_name=data.get('first_name'),
+                last_name=data.get('last_name'),
+                email=data.get('email'),
+                password=data.get('password')
+            )
+            return {
+                "id": new_user.id,
+                "first_name": new_user.first_name,
+                "last_name": new_user.last_name,
+                "email": new_user.email
+            }, 201
+        except ValueError as e:
+            api.abort(400, str(e))

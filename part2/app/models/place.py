@@ -34,3 +34,26 @@ class Place(BaseModel):
         if not isinstance(lon, (int, float)) or not (-180.0 <= lon <= 180.0):
             raise ValueError("Longitude must be between -180.0 and 180.0")
         return lon
+
+    from app.models.base_model import BaseModel
+
+class Place(BaseModel):
+    def __init__(self, title: str, price: float, latitude: float, longitude: float, owner_id: str, description: str = ""):
+        super().__init__()
+        if not title or not title.strip():
+            raise ValueError("Title cannot be empty")
+        if price <= 0:
+            raise ValueError("Price must be a positive number")
+        if not (-90.0 <= latitude <= 90.0):
+            raise ValueError("Latitude must be between -90 and 90")
+        if not (-180.0 <= longitude <= 180.0):
+            raise ValueError("Longitude must be between -180 and 180")
+        if not owner_id:
+            raise ValueError("Owner ID is required")
+
+        self.title = title.strip()
+        self.price = price
+        self.latitude = latitude
+        self.longitude = longitude
+        self.owner_id = owner_id
+        self.description = description

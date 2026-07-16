@@ -220,3 +220,37 @@ class HBnBFacade:
             del self.review_repo._storage[review_id]
             return True
         return False
+    def create_place(self, place_data):
+        # 
+        owner = self.get_user(place_data.get('owner_id'))
+        if not owner:
+            raise ValueError("Owner (User) not found")
+
+        # 
+        place = Place(
+            title=place_data['title'],
+            price=place_data['price'],
+            latitude=place_data['latitude'],
+            longitude=place_data['longitude'],
+            owner_id=place_data['owner_id'],
+            description=place_data.get('description', '')
+        )
+        return self.place_repo.add(place)
+
+    def create_review(self, review_data):
+        # 
+        user = self.get_user(review_data.get('user_id'))
+        if not user:
+            raise ValueError("User not found")
+
+        place = self.get_place(review_data.get('place_id'))
+        if not place:
+            raise ValueError("Place not found")
+
+        review = Review(
+            text=review_data['text'],
+            rating=review_data['rating'],
+            place_id=review_data['place_id'],
+            user_id=review_data['user_id']
+        )
+        return self.review_repo.add(review)
