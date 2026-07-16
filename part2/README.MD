@@ -1,3 +1,29 @@
+## Installation & Running
+
+1. Clone the repository:
+```
+git clone https://github.com/areej-alghamdi/holbertonschool-hbnb.git
+cd holbertonschool-hbnb/part2
+```
+
+2. Create and activate a virtual environment:
+```
+python3 -m venv venv
+source venv/bin/activate
+```
+
+3. Install dependencies:
+```
+pip install -r requirements.txt
+```
+
+4. Run the application:
+```
+python3 run.py
+```
+
+The API will be available at http://127.0.0.1:5000
+with automatic Swagger documentation.
 # Task 3 - Amenity Endpoints
 
 ## Objective
