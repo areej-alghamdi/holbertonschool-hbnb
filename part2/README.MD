@@ -1,4 +1,64 @@
-## Installation & Running
+# HBnB Evolution - Part 2: API & Business Logic Layer
+
+---
+
+## 📝 1. Introduction
+Welcome to **HBnB Evolution (Part 2)**! This phase of the project focuses on constructing the foundational architecture of the HBnB platform: the **Business Logic Layer** and the **API Presentation Layer**. 
+
+In this part, we transition from conceptual diagrams to actual software design. By employing Python, Flask, and Flask-RESTx, we construct the core API endpoints that will power our entire application, ensuring seamless integration between users, places, amenities, and reviews.
+
+---
+
+## 🎯 2. Project Vision
+Our vision for the HBnB platform is to build a fully decoupled, secure, and highly scalable custom application. 
+
+By applying a **Layered Architecture**, we decouple our core business logic from the specific storage mechanism (in-memory, SQL, etc.) and presentation details (web servers). This guarantees that our platform is:
+*   **Scalable:** Easy to add new modules and services without breaking existing ones.
+*   **Maintainable:** Every component has one distinct responsibility.
+*   **Testable:** The modular logic allows robust automated testing for every component.
+
+---
+
+## 🎓 3. Learning Objectives
+By completing this phase of the project, we have successfully achieved the following technical milestones:
+*   **Layered Architectural Implementation:** Constructing and maintaining separation between the Presentation, Business Logic, and Persistence Layers.
+*   **The Facade Pattern:** Implementing a centralized `ServiceFacade` to coordinate communication between layers and eliminate direct dependencies between different modules.
+*   **API Design with Flask-RESTx:** Creating standard, self-documenting RESTful APIs with organized namespaces.
+*   **Data Validation & Sanitization:** Building bulletproof domain-level rules to handle bad inputs and edge cases gracefully.
+
+---
+
+## 📂 4. Project Repository Structure
+Below is the directory tree for Part 2 of the HBnB project, highlighting our modular design:
+
+```text
+part2/
+├── app/
+│   ├── __init__.py                # App factory & API initialization
+│   ├── api/
+│   │   ├── __init__.py
+│   │   v1/
+│   │       ├── __init__.py
+│   │       ├── amenities.py       # Amenity API endpoints & models
+│   │       ├── places.py          # Place API endpoints, nested owners, & validation
+│   │       ├── reviews.py         # Review API endpoints & validations
+│   │       └── users.py           # User creation, retrieval, & updates
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── amenity.py             # Amenity domain entity (inherits from BaseModel)
+│   │   ├── base.py                # BaseModel with UUID, timestamps, and core attributes
+│   │   ├── place.py               # Place domain entity with linked owner and amenities
+│   │   ├── review.py              # Review domain entity referencing user and place
+│   │   └── user.py                # User domain entity with strict email & length rules
+│   ├── persistence/
+│   │   ├── __init__.py
+│   │   └── repository.py          # Generic In-Memory Repository pattern implementation
+│   └── services/
+│       ├── __init__.py
+│       └── facade.py              # Service Facade orchestrating all domain interconnections
+├── run.py                         # Application entrypoint
+└── README.md                      # Project documentation (this file!)## Installation & Running
+
 
 1. Clone the repository:
 ```
