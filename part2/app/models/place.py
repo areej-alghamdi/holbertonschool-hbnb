@@ -3,19 +3,26 @@ from app.models.base_model import BaseModel
 class Place(BaseModel):
     def __init__(self, title, description, price, latitude, longitude, owner):
         super().__init__()
-        # Basic validation for Place attributes
-        self.title = self.validate_string(title, "title")
+        # Basic validation for Place attributes (including max 100 chars for title)
+        self.title = self.validate_string(title, "title", max_length=100)
         self.description = description
         self.price = self.validate_price(price)
         self.latitude = self.validate_latitude(latitude)
         self.longitude = self.validate_longitude(longitude)
-        self.owner = owner  # Receives the entire User object instead of just owner_id
+        self.owner = owner  # Receives the entire User object
+        
+        # Initialize lists for relationships to prevent crashes
+        self.reviews = []
+        self.amenities = []
 
-    def validate_string(self, value, field_name):
-        """Ensure the string is non-empty."""
+    def validate_string(self, value, field_name, max_length=None):
+        """Ensure the string is non-empty and within length limits."""
         if not value or not isinstance(value, str) or len(value.strip()) == 0:
             raise ValueError(f"{field_name} is required")
-        return value.strip()
+        cleaned_value = value.strip()
+        if max_length and len(cleaned_value) > max_length:
+            raise ValueError(f"{field_name} must not exceed {max_length} characters")
+        return cleaned_value
 
     def validate_price(self, price):
         """Ensure price is a positive number."""
@@ -34,10 +41,9 @@ class Place(BaseModel):
         if not isinstance(lon, (int, float)) or not (-180.0 <= lon <= 180.0):
             raise ValueError("Longitude must be between -180.0 and 180.0")
         return lon
+
     def add_review(self, review):
         """Add review to place."""
-        # Imported locally to avoid a circular import: review.py
-        # already imports Place at module load time.
         from app.models.review import Review
         if not isinstance(review, Review):
             raise TypeError("review must be a Review")
@@ -53,8 +59,8 @@ class Place(BaseModel):
     def to_dict(self):
         """Return dictionary representation with flattened relationships."""
         data = super().to_dict()
+        data["owner_id"] = self.owner.id if self.owner else None
         data.pop("owner", None)
-        data["owner_id"] = self.owner_id
         data["reviews"] = [review.id for review in self.reviews]
         data["amenities"] = [amenity.id for amenity in self.amenities]
         return data
