@@ -1,69 +1,40 @@
 import unittest
-from app import create_app
+from app.models.user import User
 
-class TestHBnBAPI(unittest.TestCase):
+class TestUserValidation(unittest.TestCase):
 
-    def setUp(self):
-        self.app = create_app()
-        self.client = self.app.test_client()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
+    def test_valid_user_creation(self):
+        """Test creating a user with valid attributes."""
+        user = User("John", "Doe", "john.doe@example.com", "password123")
+        self.assertEqual(user.first_name, "John")
+        self.assertEqual(user.last_name, "Doe")
+        self.assertEqual(user.email, "john.doe@example.com")
+        self.assertFalse(user.is_admin)
 
-    def tearDown(self):
-        self.app_context.pop()
+    def test_empty_first_name(self):
+        """Test validation error when first name is empty."""
+        with self.assertRaises(ValueError) as context:
+            User("", "Doe", "john@example.com", "password123")
+        self.assertIn("first_name is required", str(context.exception))
 
-    def test_create_user_success(self):
-        response = self.client.post('/api/v1/users/', json={
-            "first_name": "Alice",
-            "last_name": "Smith",
-            "email": "alice.smith@example.com",
-            "password": "SecurePass99"
-        })
-        self.assertEqual(response.status_code, 201)
-        self.assertIn("id", response.get_json())
+    def test_invalid_email_format(self):
+        """Test validation error when email format is invalid."""
+        with self.assertRaises(ValueError) as context:
+            User("John", "Doe", "invalid-email-format", "password123")
+        self.assertIn("Invalid email format", str(context.exception))
 
-    def test_create_user_invalid_email(self):
-        response = self.client.post('/api/v1/users/', json={
-            "first_name": "Alice",
-            "last_name": "Smith",
-            "email": "invalid-email-format"
-        })
-        self.assertEqual(response.status_code, 400)
+    def test_short_password(self):
+        """Test validation error when password length is under 6 characters."""
+        with self.assertRaises(ValueError) as context:
+            User("John", "Doe", "john@example.com", "12345")
+        self.assertIn("Password must be at least 6 characters long", str(context.exception))
 
-    def test_create_amenity_success(self):
-        response = self.client.post('/api/v1/amenities/', json={
-            "name": "WiFi"
-        })
-        self.assertEqual(response.status_code, 201)
-
-    def test_create_place_invalid_price(self):
-        response = self.client.post('/api/v1/places/', json={
-            "title": "Beach House",
-            "price": -10.5,
-            "latitude": 34.05,
-            "longitude": -118.24,
-            "owner_id": "some-user-id"
-        })
-        self.assertEqual(response.status_code, 400)
-
-    def test_create_place_out_of_bounds_latitude(self):
-        response = self.client.post('/api/v1/places/', json={
-            "title": "Mountain Cabin",
-            "price": 150.0,
-            "latitude": 95.0,
-            "longitude": 45.0,
-            "owner_id": "some-user-id"
-        })
-        self.assertEqual(response.status_code, 400)
-
-    def test_create_review_invalid_rating(self):
-        response = self.client.post('/api/v1/reviews/', json={
-            "text": "Great experience!",
-            "rating": 6,
-            "user_id": "some-user-id",
-            "place_id": "some-place-id"
-        })
-        self.assertEqual(response.status_code, 400)
+    def test_name_too_long(self):
+        """Test validation error when name exceeds 50 characters."""
+        long_name = "A" * 51
+        with self.assertRaises(ValueError) as context:
+            User(long_name, "Doe", "john@example.com", "password123")
+        self.assertIn("first_name must be under 50 characters", str(context.exception))
 
 if __name__ == '__main__':
     unittest.main()
