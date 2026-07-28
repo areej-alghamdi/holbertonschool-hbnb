@@ -1,62 +1,46 @@
-#!/usr/bin/python3
-
-from app.models.base_model import BaseModel
+from app.models.base import BaseModel
 from app.models.user import User
 from app.models.place import Place
 
-
 class Review(BaseModel):
-    """Review model.
-
-    Attributes per Part 1 design: rating, text, user_id, place_id.
-    The actual Place/User objects are required at construction time so
-    they can be validated (they must already exist), but only their
-    ids are stored as the persisted relationship attributes.
-
-    Registering the review with its place (place.add_review()) is the
-    caller's responsibility, not this constructor's -- callers that
-    already hold the place object are expected to link it explicitly.
-    """
-
     def __init__(self, text, rating, place, user):
         super().__init__()
+        self.text = self.validate_text(text)
+        self.rating = self.validate_rating(rating)
+        self.place = self.validate_place(place)
+        self.user = self.validate_user(user)
 
+    def validate_text(self, text):
+        if not text or not str(text).strip():
+            raise ValueError("Text is required and cannot be empty")
+        return str(text)
+
+    def validate_rating(self, rating):
+        if rating is None or not isinstance(rating, int) or isinstance(rating, bool) or not (1 <= rating <= 5):
+            raise ValueError("Rating must be an integer between 1 and 5")
+        return rating
+
+    def validate_place(self, place):
         if not isinstance(place, Place):
-            raise TypeError("place must be a Place")
+            raise ValueError("place must be a valid Place instance")
+        return place
+
+    def validate_user(self, user):
         if not isinstance(user, User):
-            raise TypeError("user must be a User")
+            raise ValueError("user must be a valid User instance")
+        return user
 
-        self.text = text
-        self.rating = rating
-        self.place_id = place.id
-        self.user_id = user.id
+    @property
+    def place_id(self):
+        return self.place.id if hasattr(self.place, 'id') else self.place
 
-        self.validate()
+    @property
+    def user_id(self):
+        return self.user.id if hasattr(self.user, 'id') else self.user
 
-    def validate(self):
-        """Validate review attributes."""
-
-        if not isinstance(self.text, str):
-            raise TypeError("text must be a string")
-        if len(self.text) == 0:
-            raise ValueError("text cannot be empty")
-
-        # bool is a subclass of int in Python, so this must be checked
-        # explicitly or True/False would silently pass as 1/0.
-        if not isinstance(self.rating, int) or isinstance(self.rating, bool):
-            raise TypeError("rating must be an integer")
-        if self.rating < 1 or self.rating > 5:
-            raise ValueError("rating must be between 1 and 5")
-
-        if not isinstance(self.place_id, str) or not self.place_id:
-            raise ValueError("place_id is required")
-        if not isinstance(self.user_id, str) or not self.user_id:
-            raise ValueError("user_id is required")
-
-    @staticmethod
-    def list_by_place(reviews, place_id):
-        """Return all reviews from a collection matching a given place_id.
-
-        Matches list_by_place() from the Part 1 diagram.
-        """
-        return [r for r in reviews if r.place_id == place_id]
+    def update(self, data):
+        if 'text' in data:
+            self.text = self.validate_text(data['text'])
+        if 'rating' in data:
+            self.rating = self.validate_rating(data['rating'])
+        self.save()
