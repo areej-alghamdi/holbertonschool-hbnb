@@ -1,0 +1,170 @@
+from flask_restx import Namespace, Resource, fields
+from flask import request
+from app.services import facade
+
+api = Namespace('places', description='Place operations')
+
+place_owner_model = api.model('PlaceOwner', {
+    'id': fields.String(description='ID of the owner'),
+    'first_name': fields.String(description='First name of the owner'),
+    'last_name': fields.String(description='Last name of the owner'),
+    'email': fields.String(description='Email of the owner')
+})
+
+place_amenity_model = api.model('PlaceAmenity', {
+    'id': fields.String(description='ID of the amenity'),
+    'name': fields.String(description='Name of the amenity')
+})
+
+review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
+})
+
+place_model = api.model('Place', {
+    'title': fields.String(required=True, description='Title of the place'),
+    'description': fields.String(description='Description of the place'),
+    'price': fields.Float(required=True, description='Price per night'),
+    'latitude': fields.Float(required=True, description='Latitude of the place'),
+    'longitude': fields.Float(required=True, description='Longitude of the place'),
+    'owner_id': fields.String(required=True, description='ID of the owner'),
+    'amenities': fields.List(fields.String, required=True, description="List of amenities IDs")
+})
+
+place_update_model = api.model('PlaceUpdate', {
+    'title': fields.String(description='Title of the place'),
+    'description': fields.String(description='Description of the place'),
+    'price': fields.Float(description='Price per night'),
+    'latitude': fields.Float(description='Latitude of the place'),
+    'longitude': fields.Float(description='Longitude of the place'),
+    'amenities': fields.List(fields.String, description='List of amenity IDs')
+})
+
+place_response_model = api.model('PlaceResponse', {
+    'id': fields.String(description='Unique identifier of the place'),
+    'title': fields.String(description='Title of the place'),
+    'description': fields.String(description='Description of the place'),
+    'price': fields.Float(description='Price per night'),
+    'latitude': fields.Float(description='Latitude of the place'),
+    'longitude': fields.Float(description='Longitude of the place'),
+    'owner': fields.Nested(place_owner_model, description='Owner details'),
+    'amenities': fields.List(fields.Nested(place_amenity_model), description='List of amenities'),
+    'reviews': fields.List(fields.Nested(review_model), description='List of reviews'),
+    'created_at': fields.DateTime(description='Creation timestamp'),
+    'updated_at': fields.DateTime(description='Last update timestamp')
+})
+
+place_list_response_model = api.model('PlaceListResponse', {
+    'id': fields.String(description='Unique identifier of the place'),
+    'title': fields.String(description='Title of the place'),
+    'description': fields.String(description='Description of the place'),
+    'price': fields.Float(description='Price per night'),
+    'latitude': fields.Float(description='Latitude of the place'),
+    'longitude': fields.Float(description='Longitude of the place'),
+    'created_at': fields.DateTime(description='Creation timestamp'),
+    'updated_at': fields.DateTime(description='Last update timestamp')
+})
+
+
+@api.route('/')
+class PlaceList(Resource):
+    @api.expect(place_model, validate=True)  
+    @api.response(201, 'Place successfully created')
+    @api.response(400, 'Invalid input data')
+    @api.response(404, 'Owner or Amenity not found')
+    @api.marshal_with(place_response_model, code=201)
+    def post(self):
+        """Register a new place"""
+        try:
+            new_place = facade.create_place(api.payload)
+            return new_place, 201
+        except ValueError as e:
+            api.abort(400, str(e))
+        
+
+
+    @api.response(200, 'List of places successfully retrieved')
+    @api.marshal_list_with(place_list_response_model)
+    def get(self):
+        return facade.get_all_places(), 200
+
+
+@api.route('/<string:place_id>')
+@api.param('place_id', 'The place identifier')
+@api.response(404, 'Place not found')
+class PlaceResource(Resource):
+    @api.response(200, 'Place details successfully retrieved')
+    @api.marshal_with(place_response_model)
+    def get(self, place_id):
+        place = facade.get_place(place_id)
+        if not place:
+            api.abort(404, "Place not found")
+        return place, 200
+
+    @api.expect(place_update_model, validate=True)  
+    @api.response(200, 'Place successfully updated')
+    @api.response(400, 'Invalid input data')
+    @api.response(404, 'Amenity not found')
+    @api.marshal_with(place_response_model)
+    def put(self, place_id):
+        place_data = api.payload
+        place = facade.get_place(place_id)
+        if not place:
+            api.abort(404, "Place not found")
+
+        amenity_ids = place_data.get('amenities', [])
+        for amenity_id in amenity_ids:
+            amenity = facade.get_amenity(amenity_id)
+            if not amenity:
+                api.abort(404, f'Amenity {amenity_id} not found')
+
+        try:
+            updated_place = facade.update_place(place_id, place_data)
+            return updated_place, 200
+        except ValueError as e:
+            api.abort(400, str(e))
+
+
+@api.route('/<place_id>/reviews')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        reviews = facade.get_reviews_by_place(place_id)
+        if reviews is None:
+            return {'error': 'Place not found'}, 404
+        return [{
+            'id': r.id,
+            'text': r.text,
+            'rating': r.rating,
+            'user_id': r.user_id
+        } for r in reviews], 200
+
+        review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
+})
+
+
+@api.route('/<place_id>/reviews')
+@api.param('place_id', 'The Place identifier')
+class PlaceReviewList(Resource):
+    @api.response(200, 'List of reviews for the place retrieved successfully')
+    @api.response(404, 'Place not found')
+    def get(self, place_id):
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
+        reviews = facade.get_reviews_by_place(place_id)
+        return [{
+            'id': r.id,
+            'text': r.text,
+            'rating': r.rating,
+            'user_id': r.user.id if hasattr(r.user, 'id') else r.user_id,
+            'place_id': r.place.id if hasattr(r.place, 'id') else r.place_id
+        } for r in reviews], 200
