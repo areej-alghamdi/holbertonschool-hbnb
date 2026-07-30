@@ -1,35 +1,21 @@
-import re
 from app.models.base_model import BaseModel
+from app import bcrypt
 
 class User(BaseModel):
-    def __init__(self, first_name, last_name, email, password, is_admin=False):
+    def __init__(self, first_name, last_name, email, password=None, is_admin=False):
         super().__init__()
-        self.first_name = self.validate_name(first_name, "first_name")
-        self.last_name = self.validate_name(last_name, "last_name")
-        self.email = self.validate_email(email)
-        self.password = self.validate_password(password)  
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
         self.is_admin = is_admin
+        self.password = None
+        if password:
+            self.hash_password(password)
 
-    def validate_name(self, name, field_name):
-        if not name or not isinstance(name, str) or len(name.strip()) == 0:
-            raise ValueError(f"{field_name} is required")
-        if len(name.strip()) > 50:
-            raise ValueError(f"{field_name} must be under 50 characters")
-        return name.strip()
+    def hash_password(self, password):
+        """Hashes the password before storing it."""
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-    def validate_email(self, email):
-        if not email or not isinstance(email, str):
-            raise ValueError("Email is required")
-        
-        email_clean = email.strip().lower()
-        email_regex = r"^[\w\.-]+@[\w\.-]+\.\w+$"
-        if not re.match(email_regex, email_clean):
-            raise ValueError("Invalid email format")
-        return email_clean
-
-    def validate_password(self, password):
-        if not password or not isinstance(password, str) or len(password.strip()) == 0:
-            raise ValueError("Password is required")
-        if len(password) < 6:
-            raise ValueError("Password must be at least 6 characters long")
-        return password
+    def verify_password(self, password):
+        """Verifies if the provided password matches the hashed password."""
+        return bcrypt.check_password_hash(self.password, password)
