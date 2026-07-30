@@ -91,12 +91,24 @@ class HBnBFacade:
     # Place Methods
     # -------------------------
     def create_place(self, place_data):
-        # 1. التحقق من وجود صاحب المكان (Owner)
-        owner_id = place_data.get('owner_id')
+        # استخراج owner_id وحذفه من القاموس لمنع التضارب مع __init__
+        owner_id = place_data.pop('owner_id', None)
+        
+        if not owner_id:
+            raise ValueError("Owner ID is required")
+
         owner = self.get_user(owner_id)
         if not owner:
             raise ValueError(f"Owner with id {owner_id} does not exist")
 
+        # تعيين كائن المستخدم تحت المفتاح owner
+        place_data['owner'] = owner
+
+        # إنشاء المكان وإضافته
+        place = Place(**place_data)
+        self.place_repo.add(place)
+        return place
+    
         # 2. التحقق من وجود جميع الـ Amenities المطاوبة
         amenity_ids = place_data.get('amenities', [])
         amenities_objects = []
