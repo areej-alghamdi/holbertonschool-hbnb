@@ -90,10 +90,11 @@ class HBnBFacade:
     # -------------------------
     # Place Methods
     # -------------------------
-    def create_place(self, place_data):
+        def create_place(self, place_data):
         owner = self.get_user(place_data.get('owner_id'))
         if not owner:
             raise ValueError("Owner not found")
+
         place = Place(
             title=place_data.get('title'),
             description=place_data.get('description', ''),
@@ -102,16 +103,16 @@ class HBnBFacade:
             longitude=place_data.get('longitude'),
             owner=owner
         )
-        
-       amenity_ids = place_data.get('amenities', [])
-       amenities_objects = []
 
-       for a_id in amenity_ids:
-           amenity = self.get_amenity(a_id)
-           if not amenity:
+        amenity_ids = place_data.get('amenities', [])
+        amenities_objects = []
+
+        for a_id in amenity_ids:
+            amenity = self.get_amenity(a_id)
+            if not amenity:
                 raise ValueError(f"Amenity {a_id} not found")
             amenities_objects.append(amenity)
-                
+
         place.amenities = amenities_objects
         place.amenity_ids = amenity_ids
         self.place_repo.add(place)
