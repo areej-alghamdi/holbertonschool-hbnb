@@ -7,6 +7,7 @@ def create_app():
 
     api = Api(app, version='1.0', title='HBnB API',
               description='HBnB Application Production API')
+              doc='/api/v1/'
 
     # Register namespaces
     from app.api.v1.users.users import api as users_ns
