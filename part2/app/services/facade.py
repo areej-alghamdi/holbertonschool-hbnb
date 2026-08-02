@@ -128,7 +128,11 @@ class HBnBFacade:
         
         validated_data = {}
         if 'title' in place_data:
-            validated_data['title'] = place.validate_string(place_data['title'], 'title')
+            validated_data['title'] = place.validate_string(
+                place_data['title'],
+                'title',
+                max_length=100
+            )
         if 'description' in place_data:
             validated_data['description'] = place_data['description']
         if 'price' in place_data:
