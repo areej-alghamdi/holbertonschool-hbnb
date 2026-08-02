@@ -37,7 +37,7 @@ class TestUserValidation(unittest.TestCase):
             User(long_name, "Doe", "john@example.com", "password123")
         self.assertIn("first_name must be under 50 characters", str(context.exception))
 
-    class TestAmenityValidation(unittest.TestCase):
+class TestAmenityValidation(unittest.TestCase):
 
     def test_valid_amenity_creation(self):
         """Test creating an amenity with a valid name."""
