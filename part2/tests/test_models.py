@@ -1,5 +1,6 @@
 import unittest
 from app.models.user import User
+from app.models.amenity import Amenity
 
 class TestUserValidation(unittest.TestCase):
 
@@ -35,6 +36,26 @@ class TestUserValidation(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             User(long_name, "Doe", "john@example.com", "password123")
         self.assertIn("first_name must be under 50 characters", str(context.exception))
+
+    class TestAmenityValidation(unittest.TestCase):
+
+    def test_valid_amenity_creation(self):
+        """Test creating an amenity with a valid name."""
+        amenity = Amenity("Wi-Fi")
+        self.assertEqual(amenity.name, "Wi-Fi")
+        self.assertIsNotNone(amenity.id)
+        self.assertIsNotNone(amenity.created_at)
+        self.assertIsNotNone(amenity.updated_at)
+
+    def test_empty_amenity_name(self):
+        """Test validation error when amenity name is empty."""
+        with self.assertRaises(ValueError):
+            Amenity("")
+
+    def test_amenity_name_too_long(self):
+        """Test validation error when amenity name exceeds 50 characters."""
+        with self.assertRaises(ValueError):
+            Amenity("A" * 51)
 
 if __name__ == '__main__':
     unittest.main()
