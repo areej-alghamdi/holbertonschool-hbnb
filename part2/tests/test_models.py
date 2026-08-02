@@ -2,6 +2,7 @@ import unittest
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
+from app.models.review import Review
 
 class TestUserValidation(unittest.TestCase):
 
@@ -138,5 +139,79 @@ class TestPlaceValidation(unittest.TestCase):
                 longitude=200,
                 owner=self.owner
             )
+
+class TestReviewAndRelationships(unittest.TestCase):
+
+    def setUp(self):
+        self.user = User(
+            "John",
+            "Doe",
+            "reviewer@example.com",
+            "password123"
+        )
+
+        self.place = Place(
+            title="Cozy Apartment",
+            description="A nice place",
+            price=100,
+            latitude=24.7136,
+            longitude=46.6753,
+            owner=self.user
+        )
+
+        self.amenity = Amenity("Wi-Fi")
+
+    def test_valid_review_creation(self):
+        review = Review(
+            text="Great stay!",
+            rating=5,
+            place=self.place,
+            user=self.user
+        )
+
+        self.assertEqual(review.text, "Great stay!")
+        self.assertEqual(review.rating, 5)
+        self.assertEqual(review.place, self.place)
+        self.assertEqual(review.user, self.user)
+        self.assertEqual(review.place_id, self.place.id)
+        self.assertEqual(review.user_id, self.user.id)
+
+    def test_empty_review_text(self):
+        with self.assertRaises(ValueError):
+            Review(
+                text="",
+                rating=5,
+                place=self.place,
+                user=self.user
+            )
+
+    def test_invalid_review_rating(self):
+        with self.assertRaises(ValueError):
+            Review(
+                text="Great stay!",
+                rating=6,
+                place=self.place,
+                user=self.user
+            )
+
+    def test_add_review_to_place(self):
+        review = Review(
+            text="Great stay!",
+            rating=5,
+            place=self.place,
+            user=self.user
+        )
+
+        self.place.add_review(review)
+
+        self.assertIn(review, self.place.reviews)
+        self.assertEqual(len(self.place.reviews), 1)
+
+    def test_add_amenity_to_place(self):
+        self.place.add_amenity(self.amenity)
+
+        self.assertIn(self.amenity, self.place.amenities)
+        self.assertEqual(len(self.place.amenities), 1)
+        
 if __name__ == '__main__':
     unittest.main()
