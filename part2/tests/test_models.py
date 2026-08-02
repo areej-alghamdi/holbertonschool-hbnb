@@ -1,6 +1,7 @@
 import unittest
 from app.models.user import User
 from app.models.amenity import Amenity
+from app.models.place import Place
 
 class TestUserValidation(unittest.TestCase):
 
@@ -57,5 +58,85 @@ class TestAmenityValidation(unittest.TestCase):
         with self.assertRaises(ValueError):
             Amenity("A" * 51)
 
+class TestPlaceValidation(unittest.TestCase):
+
+    def setUp(self):
+        self.owner = User(
+            "John",
+            "Doe",
+            "owner@example.com",
+            "password123"
+        )
+
+    def test_valid_place_creation(self):
+        place = Place(
+            title="Cozy Apartment",
+            description="A nice place",
+            price=100,
+            latitude=24.7136,
+            longitude=46.6753,
+            owner=self.owner
+        )
+
+        self.assertEqual(place.title, "Cozy Apartment")
+        self.assertEqual(place.price, 100)
+        self.assertEqual(place.owner, self.owner)
+        self.assertEqual(place.reviews, [])
+        self.assertEqual(place.amenities, [])
+
+    def test_empty_title(self):
+        with self.assertRaises(ValueError):
+            Place(
+                title="",
+                description="A nice place",
+                price=100,
+                latitude=24.7136,
+                longitude=46.6753,
+                owner=self.owner
+            )
+
+    def test_title_too_long(self):
+        with self.assertRaises(ValueError):
+            Place(
+                title="A" * 101,
+                description="A nice place",
+                price=100,
+                latitude=24.7136,
+                longitude=46.6753,
+                owner=self.owner
+            )
+
+    def test_negative_price(self):
+        with self.assertRaises(ValueError):
+            Place(
+                title="Cozy Apartment",
+                description="A nice place",
+                price=-1,
+                latitude=24.7136,
+                longitude=46.6753,
+                owner=self.owner
+            )
+
+    def test_invalid_latitude(self):
+        with self.assertRaises(ValueError):
+            Place(
+                title="Cozy Apartment",
+                description="A nice place",
+                price=100,
+                latitude=100,
+                longitude=46.6753,
+                owner=self.owner
+            )
+
+    def test_invalid_longitude(self):
+        with self.assertRaises(ValueError):
+            Place(
+                title="Cozy Apartment",
+                description="A nice place",
+                price=100,
+                latitude=24.7136,
+                longitude=200,
+                owner=self.owner
+            )
 if __name__ == '__main__':
     unittest.main()
