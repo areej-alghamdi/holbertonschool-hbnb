@@ -103,12 +103,14 @@ class HBnBFacade:
             owner=owner
         )
         
-        amenity_ids = place_data.get('amenities', [])
-        amenities_objects = []
-        for a_id in amenity_ids:
-            amenity = self.get_amenity(a_id)
-            if amenity:
-                amenities_objects.append(amenity)
+       amenity_ids = place_data.get('amenities', [])
+       amenities_objects = []
+
+       for a_id in amenity_ids:
+           amenity = self.get_amenity(a_id)
+           if not amenity:
+                raise ValueError(f"Amenity {a_id} not found")
+            amenities_objects.append(amenity)
                 
         place.amenities = amenities_objects
         place.amenity_ids = amenity_ids
@@ -145,10 +147,13 @@ class HBnBFacade:
         if 'amenities' in place_data:
             amenity_ids = place_data['amenities']
             amenities_objects = []
+            
             for a_id in amenity_ids:
                 amenity = self.get_amenity(a_id)
-                if amenity:
-                    amenities_objects.append(amenity)
+                if not amenity:
+                    raise ValueError(f"Amenity {a_id} not found")
+                amenities_objects.append(amenity)
+                
             place.amenities = amenities_objects
             place.amenity_ids = amenity_ids
 
