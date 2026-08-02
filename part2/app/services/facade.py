@@ -90,7 +90,7 @@ class HBnBFacade:
     # -------------------------
     # Place Methods
     # -------------------------
-        def create_place(self, place_data):
+    def create_place(self, place_data):
         owner = self.get_user(place_data.get('owner_id'))
         if not owner:
             raise ValueError("Owner not found")
