@@ -114,9 +114,9 @@ class HBnBFacade:
         place.amenity_ids = amenity_ids
         self.place_repo.add(place)
         return place
-
-   def get_place(self, place_id):
-    return self.place_repo.get(place_id)
+        
+    def get_place(self, place_id):
+        return self.place_repo.get(place_id)
 
     def get_all_places(self):
         return self.place_repo.get_all()
