@@ -19,7 +19,7 @@ review_update_model = api.model('ReviewUpdate', {
 
 @api.route('/')
 class ReviewList(Resource):
-    @api.expect(review_model)
+    @api.expect(review_model, validate=True)
     @api.response(201, 'Review created successfully')
     @api.response(400, 'Invalid input data')
     @api.response(404, 'User or Place not found')
@@ -92,7 +92,7 @@ class ReviewResource(Resource):
             'place_id': review.place.id if hasattr(review.place, 'id') else review.place_id
         }, 200
 
-    @api.expect(review_update_model)
+    @api.expect(review_update_model, validate=True)
     @api.response(200, 'Review updated successfully')
     @api.response(400, 'Invalid data')
     @api.response(404, 'Review not found')
