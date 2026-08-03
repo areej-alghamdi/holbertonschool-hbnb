@@ -16,11 +16,24 @@ class BaseModel(db.Model):
     it's stored.
     """
 
-    __abstract__ = True  
+    __abstract__ = True
 
-    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    created_at = db.Column(db.DateTime, default=datetime.now)
-    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    id = db.Column(
+        db.String(36),
+        primary_key=True,
+        default=lambda: str(uuid.uuid4())
+    )
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        nullable=False
+    )
+    updated_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow,
+        nullable=False
+    )
 
     def create(self):
         """Lifecycle hook for when the object is first persisted."""
@@ -28,7 +41,7 @@ class BaseModel(db.Model):
 
     def save(self):
         """Update the updated_at timestamp."""
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.utcnow()
 
     def update(self, data):
         """Update attributes from a dict, then re-validate.
@@ -67,7 +80,7 @@ class BaseModel(db.Model):
         result = {}
         for key, value in self.__dict__.items():
             if key.startswith("_sa_"):
-                continue  
+                continue
             if isinstance(value, datetime):
                 result[key] = value.isoformat()
             else:
