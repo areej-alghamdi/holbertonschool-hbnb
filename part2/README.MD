@@ -3,7 +3,7 @@
 ---
 
 ## 📝 1. Overview
-**HBnB Evolution** is a modular, layered, and scalable web application, secure, and highly scalable custom web application inspired by the core functionalities of AirBnB. 
+**HBnB Evolution is a modular, layered, secure, and scalable web application inspired by the core functionalities of Airbnb.
 
 This phase of the project (Part 2) focuses on building the core **Business Logic Layer** and establishing the **API Presentation Layer** using Python, Flask, and Flask-RESTx. Rather than direct database communication, the application utilizes a modular, layered architecture coordinated by a centralized Facade pattern to handle data management, business rules, and validation seamlessly.
 
@@ -44,7 +44,7 @@ The backend of HBnB is structured following strict software engineering principl
 ```
 
 ### The Facade Pattern
-To avoid tight coupling between our API endpoints and our database/models, we implemented the Facade Pattern via ServiceFacade. All presentation-layer requests communicate exclusively with this facade, which manages interaction with the underlying models and repositories.
+To avoid tight coupling between our API endpoints and our database/models,we implemented the Facade Pattern through the HBnBFacade class. All presentation-layer requests communicate exclusively with this facade, which manages interaction with the underlying models and repositories.
 
 ## 📋 4. Business & Validation Rules
 
@@ -54,11 +54,11 @@ To safeguard the application's data integrity, the following rules are strictly 
 | :--- | :--- | :--- |
 | **User** | Email | Must be unique, required, and follow a valid email format. |
 | **User** | First/Last Name | Required; maximum length of 50 characters. |
-| **Place** | Title | Required; cannot be empty. |
-| **Place** | Price | Must be a positive value (greater than or equal to 0). |
+| **Place** | Title | Required; cannot be empty and must not exceed 100 characters. |
+| **Place** | Price | Must be a non-negative number (greater than or equal to 0). |
 | **Place** | Latitude / Longitude | Coordinates must fall within physical boundaries: Latitude (`-90.0` to `90.0`), Longitude (`-180.0` to `180.0`). |
 | **Place** | Owner | Must point to a valid, existing User inside the system. |
-| **Amenity** | Name | Required; cannot be empty. |
+| **Amenity** | Name | Required; cannot be empty and must not exceed 50 characters. |
 | **Review** | Text | Required; cannot be empty. |
 | **Review** | Rating | Must be an integer between 1 and 5. |
 | **Review** | User & Place | Must reference a valid, existing User and an existing Place. |
@@ -127,7 +127,7 @@ http://127.0.0.1:5000
 Swagger documentation is available at:
 
 ```text
-http://127.0.0.1:5000/
+http://127.0.0.1:5000/api/v1/
 ```
 
 ---
