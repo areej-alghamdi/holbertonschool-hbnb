@@ -12,7 +12,7 @@ This report documents the manual testing and validation of the HBnB API endpoint
 
 **Endpoint**
 
-POST /api/v1/users/
+`POST /api/v1/users/`
 
 **Input**
 
@@ -29,11 +29,13 @@ POST /api/v1/users/
 
 - Status Code: 201 Created
 - User created successfully.
+- The password is not included in the response.
 
 **Actual Result**
 
 - Status Code: 201 Created
 - User created successfully.
+- The password was not included in the response.
 
 **Status**
 
@@ -41,7 +43,11 @@ PASS
 
 ---
 
-## Test 2: Create User (Invalid Data)
+## Test 2: Create User With Invalid Data
+
+**Endpoint**
+
+`POST /api/v1/users/`
 
 **Input**
 
@@ -49,17 +55,20 @@ PASS
 {
     "first_name": "",
     "last_name": "",
-    "email": "not-an-email"
+    "email": "not-an-email",
+    "password": "SecurePass99"
 }
 ```
 
 **Expected Result**
 
 - Status Code: 400 Bad Request
+- A validation error message is returned.
 
 **Actual Result**
 
 - Status Code: 400 Bad Request
+- A validation error message was returned.
 
 **Status**
 
@@ -67,21 +76,32 @@ PASS
 
 ---
 
-## Test 3: Retrieve Users
+## Test 3: Create User With Duplicate Email
 
 **Endpoint**
 
-GET /api/v1/users/
+`POST /api/v1/users/`
+
+**Input**
+
+```json
+{
+    "first_name": "Another",
+    "last_name": "User",
+    "email": "ahaad.14550@gmail.com",
+    "password": "SecurePass99"
+}
+```
 
 **Expected Result**
 
-- Status Code: 200 OK
-- Returns all users.
+- Status Code: 400 Bad Request
+- Duplicate email addresses are rejected.
 
 **Actual Result**
 
-- Status Code: 200 OK
-- User list returned successfully.
+- Status Code: 400 Bad Request
+- The duplicate email address was rejected.
 
 **Status**
 
@@ -89,21 +109,95 @@ PASS
 
 ---
 
-## Test 4: Update User
+## Test 4: Retrieve All Users
 
 **Endpoint**
 
-PUT /api/v1/users/<user_id>
+`GET /api/v1/users/`
 
 **Expected Result**
 
 - Status Code: 200 OK
-- User updated successfully.
+- Returns a list of all users.
 
 **Actual Result**
 
 - Status Code: 200 OK
-- User updated successfully.
+- The user list was returned successfully.
+
+**Status**
+
+PASS
+
+---
+
+## Test 5: Retrieve User by ID
+
+**Endpoint**
+
+`GET /api/v1/users/<user_id>`
+
+**Expected Result**
+
+- Status Code: 200 OK
+- Returns the requested user.
+
+**Actual Result**
+
+- Status Code: 200 OK
+- The requested user was returned successfully.
+
+**Status**
+
+PASS
+
+---
+
+## Test 6: Retrieve Nonexistent User
+
+**Endpoint**
+
+`GET /api/v1/users/<invalid_user_id>`
+
+**Expected Result**
+
+- Status Code: 404 Not Found
+
+**Actual Result**
+
+- Status Code: 404 Not Found
+
+**Status**
+
+PASS
+
+---
+
+## Test 7: Update User
+
+**Endpoint**
+
+`PUT /api/v1/users/<user_id>`
+
+**Input**
+
+```json
+{
+    "first_name": "Updated",
+    "last_name": "Alqahtani",
+    "email": "updated.ahaad@example.com"
+}
+```
+
+**Expected Result**
+
+- Status Code: 200 OK
+- User information is updated successfully.
+
+**Actual Result**
+
+- Status Code: 200 OK
+- User information was updated successfully.
 
 **Status**
 
@@ -114,6 +208,10 @@ PASS
 # Amenity Endpoints
 
 ## Test 1: Create Amenity
+
+**Endpoint**
+
+`POST /api/v1/amenities/`
 
 **Input**
 
@@ -126,10 +224,12 @@ PASS
 **Expected Result**
 
 - Status Code: 201 Created
+- Amenity created successfully.
 
 **Actual Result**
 
 - Status Code: 201 Created
+- Amenity created successfully.
 
 **Status**
 
@@ -137,9 +237,19 @@ PASS
 
 ---
 
-## Test 2: Invalid Amenity
+## Test 2: Create Amenity With Empty Name
 
-Empty name.
+**Endpoint**
+
+`POST /api/v1/amenities/`
+
+**Input**
+
+```json
+{
+    "name": ""
+}
+```
 
 **Expected Result**
 
@@ -155,15 +265,21 @@ PASS
 
 ---
 
-## Test 3: Retrieve Amenities
+## Test 3: Retrieve All Amenities
+
+**Endpoint**
+
+`GET /api/v1/amenities/`
 
 **Expected Result**
 
 - Status Code: 200 OK
+- Returns a list of all amenities.
 
 **Actual Result**
 
 - Status Code: 200 OK
+- The amenity list was returned successfully.
 
 **Status**
 
@@ -171,15 +287,71 @@ PASS
 
 ---
 
-## Test 4: Update Amenity
+## Test 4: Retrieve Amenity by ID
+
+**Endpoint**
+
+`GET /api/v1/amenities/<amenity_id>`
 
 **Expected Result**
 
 - Status Code: 200 OK
+- Returns the requested amenity.
 
 **Actual Result**
 
 - Status Code: 200 OK
+- The requested amenity was returned successfully.
+
+**Status**
+
+PASS
+
+---
+
+## Test 5: Retrieve Nonexistent Amenity
+
+**Endpoint**
+
+`GET /api/v1/amenities/<invalid_amenity_id>`
+
+**Expected Result**
+
+- Status Code: 404 Not Found
+
+**Actual Result**
+
+- Status Code: 404 Not Found
+
+**Status**
+
+PASS
+
+---
+
+## Test 6: Update Amenity
+
+**Endpoint**
+
+`PUT /api/v1/amenities/<amenity_id>`
+
+**Input**
+
+```json
+{
+    "name": "Private Swimming Pool"
+}
+```
+
+**Expected Result**
+
+- Status Code: 200 OK
+- The updated amenity object is returned.
+
+**Actual Result**
+
+- Status Code: 200 OK
+- The updated amenity object was returned successfully.
 
 **Status**
 
@@ -191,6 +363,10 @@ PASS
 
 ## Test 1: Create Place
 
+**Endpoint**
+
+`POST /api/v1/places/`
+
 **Input**
 
 ```json
@@ -200,17 +376,24 @@ PASS
     "price": 85.0,
     "latitude": 24.7136,
     "longitude": 46.6753,
-    "owner_id": "<user_id>"
+    "owner_id": "<user_id>",
+    "amenities": [
+        "<amenity_id>"
+    ]
 }
 ```
 
 **Expected Result**
 
 - Status Code: 201 Created
+- Place created successfully.
+- The response includes the owner, amenities, and reviews.
 
 **Actual Result**
 
 - Status Code: 201 Created
+- Place created successfully.
+- The response included the owner, amenities, and an empty reviews list.
 
 **Status**
 
@@ -218,9 +401,25 @@ PASS
 
 ---
 
-## Test 2: Invalid Price
+## Test 2: Create Place With Negative Price
 
-Negative price.
+**Endpoint**
+
+`POST /api/v1/places/`
+
+**Input**
+
+```json
+{
+    "title": "Invalid Place",
+    "description": "A place with an invalid price",
+    "price": -10,
+    "latitude": 24.7136,
+    "longitude": 46.6753,
+    "owner_id": "<user_id>",
+    "amenities": []
+}
+```
 
 **Expected Result**
 
@@ -236,27 +435,25 @@ PASS
 
 ---
 
-## Test 3: Invalid Latitude
+## Test 3: Create Place With Invalid Latitude
 
-Latitude outside the valid range.
+**Endpoint**
 
-**Expected Result**
+`POST /api/v1/places/`
 
-- Status Code: 400 Bad Request
+**Input**
 
-**Actual Result**
-
-- Status Code: 400 Bad Request
-
-**Status**
-
-PASS
-
----
-
-## Test 4: Invalid Longitude
-
-Longitude outside the valid range.
+```json
+{
+    "title": "Invalid Latitude Place",
+    "description": "A place with invalid coordinates",
+    "price": 85.0,
+    "latitude": 100,
+    "longitude": 46.6753,
+    "owner_id": "<user_id>",
+    "amenities": []
+}
+```
 
 **Expected Result**
 
@@ -272,15 +469,125 @@ PASS
 
 ---
 
-## Test 5: Retrieve Places
+## Test 4: Create Place With Invalid Longitude
+
+**Endpoint**
+
+`POST /api/v1/places/`
+
+**Input**
+
+```json
+{
+    "title": "Invalid Longitude Place",
+    "description": "A place with invalid coordinates",
+    "price": 85.0,
+    "latitude": 24.7136,
+    "longitude": 200,
+    "owner_id": "<user_id>",
+    "amenities": []
+}
+```
+
+**Expected Result**
+
+- Status Code: 400 Bad Request
+
+**Actual Result**
+
+- Status Code: 400 Bad Request
+
+**Status**
+
+PASS
+
+---
+
+## Test 5: Create Place With Nonexistent Owner
+
+**Endpoint**
+
+`POST /api/v1/places/`
+
+**Input**
+
+```json
+{
+    "title": "Invalid Owner Place",
+    "description": "A place with a nonexistent owner",
+    "price": 85.0,
+    "latitude": 24.7136,
+    "longitude": 46.6753,
+    "owner_id": "<invalid_user_id>",
+    "amenities": []
+}
+```
+
+**Expected Result**
+
+- Status Code: 404 Not Found
+
+**Actual Result**
+
+- Status Code: 404 Not Found
+
+**Status**
+
+PASS
+
+---
+
+## Test 6: Create Place With Nonexistent Amenity
+
+**Endpoint**
+
+`POST /api/v1/places/`
+
+**Input**
+
+```json
+{
+    "title": "Invalid Amenity Place",
+    "description": "A place with a nonexistent amenity",
+    "price": 85.0,
+    "latitude": 24.7136,
+    "longitude": 46.6753,
+    "owner_id": "<user_id>",
+    "amenities": [
+        "<invalid_amenity_id>"
+    ]
+}
+```
+
+**Expected Result**
+
+- Status Code: 404 Not Found
+
+**Actual Result**
+
+- Status Code: 404 Not Found
+
+**Status**
+
+PASS
+
+---
+
+## Test 7: Retrieve All Places
+
+**Endpoint**
+
+`GET /api/v1/places/`
 
 **Expected Result**
 
 - Status Code: 200 OK
+- Returns a list of all places.
 
 **Actual Result**
 
 - Status Code: 200 OK
+- The place list was returned successfully.
 
 **Status**
 
@@ -288,15 +595,78 @@ PASS
 
 ---
 
-## Test 6: Update Place
+## Test 8: Retrieve Place by ID
+
+**Endpoint**
+
+`GET /api/v1/places/<place_id>`
 
 **Expected Result**
 
 - Status Code: 200 OK
+- Returns the requested place with owner, amenities, and reviews.
 
 **Actual Result**
 
 - Status Code: 200 OK
+- The requested place was returned with its related data.
+
+**Status**
+
+PASS
+
+---
+
+## Test 9: Retrieve Nonexistent Place
+
+**Endpoint**
+
+`GET /api/v1/places/<invalid_place_id>`
+
+**Expected Result**
+
+- Status Code: 404 Not Found
+
+**Actual Result**
+
+- Status Code: 404 Not Found
+
+**Status**
+
+PASS
+
+---
+
+## Test 10: Update Place
+
+**Endpoint**
+
+`PUT /api/v1/places/<place_id>`
+
+**Input**
+
+```json
+{
+    "title": "Updated Downtown Apartment",
+    "description": "An updated apartment description",
+    "price": 100.0,
+    "latitude": 24.7136,
+    "longitude": 46.6753,
+    "amenities": [
+        "<amenity_id>"
+    ]
+}
+```
+
+**Expected Result**
+
+- Status Code: 200 OK
+- Place information is updated successfully.
+
+**Actual Result**
+
+- Status Code: 200 OK
+- Place information was updated successfully.
 
 **Status**
 
@@ -307,6 +677,10 @@ PASS
 # Review Endpoints
 
 ## Test 1: Create Review
+
+**Endpoint**
+
+`POST /api/v1/reviews/`
 
 **Input**
 
@@ -322,10 +696,12 @@ PASS
 **Expected Result**
 
 - Status Code: 201 Created
+- Review created successfully.
 
 **Actual Result**
 
 - Status Code: 201 Created
+- Review created successfully.
 
 **Status**
 
@@ -333,7 +709,22 @@ PASS
 
 ---
 
-## Test 2: Empty Review Text
+## Test 2: Create Review With Empty Text
+
+**Endpoint**
+
+`POST /api/v1/reviews/`
+
+**Input**
+
+```json
+{
+    "text": "",
+    "rating": 5,
+    "user_id": "<user_id>",
+    "place_id": "<place_id>"
+}
+```
 
 **Expected Result**
 
@@ -349,9 +740,22 @@ PASS
 
 ---
 
-## Test 3: Invalid Rating
+## Test 3: Create Review With Invalid Rating
 
-Rating outside the valid range.
+**Endpoint**
+
+`POST /api/v1/reviews/`
+
+**Input**
+
+```json
+{
+    "text": "This rating is invalid.",
+    "rating": 6,
+    "user_id": "<user_id>",
+    "place_id": "<place_id>"
+}
+```
 
 **Expected Result**
 
@@ -367,15 +771,21 @@ PASS
 
 ---
 
-## Test 4: Retrieve Reviews
+## Test 4: Retrieve All Reviews
+
+**Endpoint**
+
+`GET /api/v1/reviews/`
 
 **Expected Result**
 
 - Status Code: 200 OK
+- Returns a list of all reviews.
 
 **Actual Result**
 
 - Status Code: 200 OK
+- The review list was returned successfully.
 
 **Status**
 
@@ -383,15 +793,21 @@ PASS
 
 ---
 
-## Test 5: Update Review
+## Test 5: Retrieve Review by ID
+
+**Endpoint**
+
+`GET /api/v1/reviews/<review_id>`
 
 **Expected Result**
 
 - Status Code: 200 OK
+- Returns the requested review.
 
 **Actual Result**
 
 - Status Code: 200 OK
+- The requested review was returned successfully.
 
 **Status**
 
@@ -399,11 +815,106 @@ PASS
 
 ---
 
-## Swagger Documentation
+## Test 6: Retrieve Reviews by Place
+
+**Endpoint**
+
+`GET /api/v1/places/<place_id>/reviews`
+
+**Expected Result**
+
+- Status Code: 200 OK
+- Returns all reviews associated with the specified place.
+
+**Actual Result**
+
+- Status Code: 200 OK
+- Reviews associated with the specified place were returned successfully.
+
+**Status**
+
+PASS
+
+---
+
+## Test 7: Update Review
+
+**Endpoint**
+
+`PUT /api/v1/reviews/<review_id>`
+
+**Input**
+
+```json
+{
+    "text": "Updated review text.",
+    "rating": 4
+}
+```
+
+**Expected Result**
+
+- Status Code: 200 OK
+- Review information is updated successfully.
+
+**Actual Result**
+
+- Status Code: 200 OK
+- Review information was updated successfully.
+
+**Status**
+
+PASS
+
+---
+
+## Test 8: Delete Review
+
+**Endpoint**
+
+`DELETE /api/v1/reviews/<review_id>`
+
+**Expected Result**
+
+- Status Code: 200 OK
+- Review deleted successfully.
+
+**Actual Result**
+
+- Status Code: 200 OK
+- Review deleted successfully.
+
+**Status**
+
+PASS
+
+---
+
+## Test 9: Retrieve Deleted Review
+
+**Endpoint**
+
+`GET /api/v1/reviews/<review_id>`
+
+**Expected Result**
+
+- Status Code: 404 Not Found
+
+**Actual Result**
+
+- Status Code: 404 Not Found
+
+**Status**
+
+PASS
+
+---
+
+# Swagger Documentation
 
 The Swagger documentation was generated successfully using Flask-RESTx and reviewed through:
 
-```
+```text
 http://127.0.0.1:5000/api/v1/
 ```
 
@@ -411,19 +922,47 @@ All implemented endpoints were available and correctly documented.
 
 ---
 
+# Unit Testing
+
+The model unit tests were executed using:
+
+```bash
+python3 -m unittest discover -v
+```
+
+**Result**
+
+```text
+Ran 19 tests
+OK
+```
+
+The tests covered valid and invalid cases for User, Amenity, Place, and Review models, including relationship methods.
+
+---
+
 # Validation Summary
 
 The following validation rules were successfully verified:
 
-- User first_name cannot be empty.
-- User last_name cannot be empty.
-- User email must be valid.
+- User first name cannot be empty.
+- User last name cannot be empty.
+- User first and last names cannot exceed 50 characters.
+- User email must follow a valid format.
+- User email must be unique.
+- User password must contain at least 6 characters.
+- Amenity name cannot be empty.
+- Amenity name cannot exceed 50 characters.
 - Place title cannot be empty.
-- Place price must be positive.
+- Place title cannot exceed 100 characters.
+- Place price must be non-negative.
 - Latitude must be between -90 and 90.
 - Longitude must be between -180 and 180.
+- Place owners must reference existing users.
+- Place amenities must reference existing amenities.
 - Review text cannot be empty.
-- Review rating must be between 1 and 5.
+- Review rating must be an integer between 1 and 5.
+- Reviews must reference an existing user and place.
 - Entity relationships are validated correctly.
 
 ---
@@ -434,4 +973,6 @@ All implemented endpoints were successfully tested using cURL and Swagger.
 
 Both valid and invalid scenarios behaved as expected, returning the appropriate HTTP status codes and validation messages.
 
-The application correctly handled successful requests, validation failures, and error cases according to the project requirements.
+The model unit tests also completed successfully, with all 19 tests passing.
+
+The application correctly handled successful requests, validation failures, missing resources, entity relationships, updates, and review deletion according to the project requirements.
