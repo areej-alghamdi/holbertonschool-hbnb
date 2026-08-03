@@ -7,14 +7,14 @@ BASE_URL="http://127.0.0.1:5000/api/v1"
 echo "=========================================="
 echo "1. Testing GET /users (Fetch all users)"
 echo "=========================================="
-curl -X GET "$BASE_URL/users" \
+curl -X GET "$BASE_URL/users/" \
      -H "Content-Type: application/json"
 echo -e "\n\n"
 
 echo "=========================================="
 echo "2. Testing POST /users (Valid User Creation)"
 echo "=========================================="
-curl -X POST "$BASE_URL/users" \
+curl -X POST "$BASE_URL/users/" \
      -H "Content-Type: application/json" \
      -d '{
            "first_name": "Alice",
