@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-
+from flask_jwt_extended import jwt_required
+from flask import request
+from app.api.v1.admin import admin_required
 # Create the amenities namespace
 api = Namespace('amenities', description='Amenity operations')
 
@@ -68,3 +70,39 @@ class AmenityResource(Resource):
             return updated_amenity, 200
         except ValueError as e:
             api.abort(400, str(e))
+
+            
+         ## admin_required() 
+@api.route('/')
+class AmenityList(Resource):
+    @jwt_required()
+    @admin_required()
+    def post(self):
+        data = request.json
+        name = data.get('name')
+
+        if not name:
+            return {'error': 'Name is required'}, 400
+
+        new_amenity = facade.create_amenity(data)
+        return {
+            'id': new_amenity.id,
+            'name': new_amenity.name
+        }, 201
+
+@api.route('/<amenity_id>')
+class AmenityResource(Resource):
+    @jwt_required()
+    @admin_required()
+    def put(self, amenity_id):
+        data = request.json
+        amenity = facade.get_amenity(amenity_id)
+
+        if not amenity:
+            return {'error': 'Amenity not found'}, 404
+
+        updated_amenity = facade.update_amenity(amenity_id, data)
+        return {
+            'id': updated_amenity.id,
+            'name': updated_amenity.name
+        }, 200

@@ -1,8 +1,14 @@
 from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.place import Place
+from app import db
+
 
 class Review(BaseModel):
+    __tablename__ = 'reviews'
+    text = db.Column(db.String(1024), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+
     def __init__(self, text, rating, place, user):
         super().__init__()
         self.text = self.validate_text(text)

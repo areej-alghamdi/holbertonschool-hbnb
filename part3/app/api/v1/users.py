@@ -1,6 +1,8 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
+from app.api.v1.admin import admin_required
+from flask import request
 
 api = Namespace('users', description='User operations')
 
@@ -70,20 +72,40 @@ class UserResource(Resource):
     @api.response(400, 'You cannot modify email or password')
     @api.response(403, 'Unauthorized action')
     def put(self, user_id):
-        """Modify user details (Only self, email & password locked)"""
+        """Modify user details.
+
+        Regular users: can edit their own profile, but NOT email/password.
+        Admins: can edit any user, including email/password.
+        """
         current_user_id = get_jwt_identity()
 
-        if str(user_id) != str(current_user_id):
-            return {'error': 'Unauthorized action'}, 403
+        # تحقق هل المستخدم أدمن
+        is_admin = facade.get_user(current_user_id).is_admin if facade.get_user(current_user_id) else False
 
-        user_data = api.payload
-        if 'email' in user_data or 'password' in user_data:
-            return {'error': 'You cannot modify email or password'}, 400
+        if not is_admin:
+            if str(user_id) != str(current_user_id):
+                return {'error': 'Unauthorized action'}, 403
+
+            user_data = api.payload
+            if 'email' in user_data or 'password' in user_data:
+                return {'error': 'You cannot modify email or password'}, 400
+        else:
+            user_data = request.json
+            email = user_data.get('email')
+            if email:
+                existing_user = facade.get_user_by_email(email)
+                if existing_user and existing_user.id != user_id:
+                    return {'error': 'Email is already in use'}, 400
+
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
 
         updated_user = facade.update_user(user_id, user_data)
         return {
             'id': updated_user.id,
             'first_name': updated_user.first_name,
             'last_name': updated_user.last_name,
-            'email': updated_user.email
+            'email': updated_user.email,
+            'is_admin': updated_user.is_admin
         }, 200

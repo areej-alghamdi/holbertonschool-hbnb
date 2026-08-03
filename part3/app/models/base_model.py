@@ -2,9 +2,10 @@
 
 import uuid
 from datetime import datetime
+from app import db
 
 
-class BaseModel:
+class BaseModel(db.Model):
     """Base class for all models.
 
     Provides the shared id/timestamp fields and the create(), update(),
@@ -15,10 +16,11 @@ class BaseModel:
     it's stored.
     """
 
-    def __init__(self):
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    __abstract__ = True  
+
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     def create(self):
         """Lifecycle hook for when the object is first persisted."""
@@ -64,6 +66,8 @@ class BaseModel:
         """Return a JSON-serializable dictionary representation."""
         result = {}
         for key, value in self.__dict__.items():
+            if key.startswith("_sa_"):
+                continue  
             if isinstance(value, datetime):
                 result[key] = value.isoformat()
             else:

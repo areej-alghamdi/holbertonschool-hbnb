@@ -1,6 +1,7 @@
 from flask_restx import Namespace, Resource, fields
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.services import facade
+from flask import request
 
 api = Namespace('places', description='Place operations')
 
@@ -97,17 +98,40 @@ class PlaceResource(Resource):
     @api.response(403, 'Unauthorized action')
     @api.response(404, 'Place not found')
     def put(self, place_id):
-        """Update a place (Only owner can modify)"""
+        """Update a place (Owner or Admin only)"""
+        claims = get_jwt()
         current_user_id = get_jwt_identity()
-        place = facade.get_place(place_id)
+        is_admin = claims.get('is_admin', False)
 
+        place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
 
         owner_id = place.owner.id if hasattr(place.owner, 'id') else place.owner
-        if str(owner_id) != str(current_user_id):
+        if not is_admin and str(owner_id) != str(current_user_id):
             return {'error': 'Unauthorized action'}, 403
 
         place_data = api.payload
         facade.update_place(place_id, place_data)
         return {'message': 'Place updated successfully'}, 200
+
+    @jwt_required()
+    @api.response(200, 'Place deleted successfully')
+    @api.response(403, 'Unauthorized action')
+    @api.response(404, 'Place not found')
+    def delete(self, place_id):
+        """Delete a place (Owner or Admin only)"""
+        claims = get_jwt()
+        current_user_id = get_jwt_identity()
+        is_admin = claims.get('is_admin', False)
+
+        place = facade.get_place(place_id)
+        if not place:
+            return {'error': 'Place not found'}, 404
+
+        owner_id = place.owner.id if hasattr(place.owner, 'id') else place.owner
+        if not is_admin and str(owner_id) != str(current_user_id):
+            return {'error': 'Unauthorized action'}, 403
+
+        facade.delete_place(place_id)
+        return {'message': 'Place deleted successfully'}, 200
