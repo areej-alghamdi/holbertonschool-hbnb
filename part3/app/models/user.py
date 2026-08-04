@@ -1,5 +1,5 @@
 from app import db, bcrypt
-from .baseclass import BaseModel
+from .BaseModel import BaseModel
 
 
 class User(BaseModel):
