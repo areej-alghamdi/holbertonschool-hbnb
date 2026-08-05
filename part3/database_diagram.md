@@ -63,4 +63,4 @@ erDiagram
 
 ## Exported Diagram
 
-![HBnB ER Diagram](docs/hbnb_er_diagram.svg)
+![HBnB ER Diagram](docs/hbnb_er_diagram.png)
