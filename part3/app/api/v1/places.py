@@ -53,8 +53,9 @@ place_model = api.model('Place', {
         description='Owner details'
     ),
     'amenities': fields.List(
-        fields.Nested(amenity_model),
-        description='List of amenities'
+    fields.String,
+    required=False,
+    description='List of amenity IDs'
     ),
     'reviews': fields.List(
         fields.Nested(review_model),
