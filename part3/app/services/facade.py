@@ -296,8 +296,6 @@ class HBnBFacade:
         )
 
         self.review_repo.add(review)
-        place.add_review(review)
-
         return review
 
     def get_review(self, review_id):
