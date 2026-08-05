@@ -1,7 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from app.services import facade
-from flask import request
 
 api = Namespace('reviews', description='Review operations')
 
