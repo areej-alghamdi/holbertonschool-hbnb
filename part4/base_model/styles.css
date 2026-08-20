@@ -51,6 +51,25 @@ main {
     margin: 0 auto;
     padding: 20px;
 }
+/* Filter Section */
+#filter {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#filter label {
+    font-weight: bold;
+}
+
+#price-filter {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+}
 
 /* Place Cards & Review Cards (Required Specs) */
 .place-card, .review-card {
