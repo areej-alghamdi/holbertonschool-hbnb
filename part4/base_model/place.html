@@ -1,113 +1,48 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Place Details</title>
-
     <link rel="stylesheet" href="styles.css">
-
-   
-
-       
-
-       
-
 </head>
-
 <body>
-
     <header>
-
         <img src="images/logo.png" alt="HBnB Logo" class="logo">
-
         <nav>
-
             <a href="index.html">Home</a>
-
             <a href="login.html" class="login-button">Login</a>
-
         </nav>
-
     </header>
 
-
-
     <main>
-
         <!-- Place Extended Details -->
-
         <section id="place-details" class="place-details">
-
-            <h2>Obhur Sea View Villa</h2>
-
+            <h2 id="place-title">Loading...</h2>
             <div class="place-info">
-
-            
-
-                <p><strong>Price:</strong> $280 / night</p>
-
-                <p><strong>Description:</strong> A beautiful waterfront villa with ocean views and modern amenities.</p>
-
-                <p><strong>Amenities:</strong> Wi-Fi, Pool, Free Parking, Air Conditioning.</p>
-
+                <p><strong>Price:</strong> <span id="place-price"></span></p>
+                <p><strong>Description:</strong> <span id="place-desc"></span></p>
+                <p><strong>Amenities:</strong> <span id="place-amenities"></span></p>
             </div>
-
         </section>
 
 
 
         <!-- Reviews Section -->
-
         <section id="reviews">
-
             <h3>Reviews</h3>
-
-           
-
-            <article class="review-card">
-
-                <h4>Sara Abdullah <span class="rating-badge">★ 5.0</span></h4>
-
-                <p>"The view was breathtaking! Very clean and quiet place."</p>
-
-            </article>
-
-
-
-            <article class="review-card">
-
-                <h4>Khaled Omar <span class="rating-badge">★ 4.0</span></h4>
-
-                <p>"Great experience overall, host was very welcoming."</p>
-
-            </article>
-
+            <div id="reviews-list">
+                <!-- Dynamic Reviews Inserted Here -->
+            </div>
         </section>
 
-
-
         <!-- Add Review Form -->
-
         <section id="add-review">
-
             <form id="review-form" class="add-review form">
-
                 <h2>Add a Review</h2>
-
-               
-
+                
                 <label>Rating:</label>
-
-                <!-- ميزة النجوم التفاعلية -->
-
                 <div class="star-rating">
-
                     <input type="radio" id="star5" name="rating" value="5" required><label for="star5">★</label>
 
                     <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
@@ -120,34 +55,18 @@
 
                 </div>
 
-
-
                 <label for="review-text">Review:</label>
-
                 <textarea id="review-text" name="review-text" rows="4" placeholder="Write your review here..." required></textarea>
-
-               
-
+                
                 <button type="submit">Submit Review</button>
-
             </form>
-
         </section>
-
     </main>
 
-
-
     <footer>
-
         <p>&copy; 2026 All rights reserved.</p>
-
     </footer>
 
-
-
     <script src="scripts.js"></script>
-
 </body>
-
 </html>

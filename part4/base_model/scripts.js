@@ -182,3 +182,151 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchPlaces(token);
     }
 });
+document.addEventListener('DOMContentLoaded', () => {
+    const placeId = getPlaceIdFromURL();
+    const token = getCookie('token');
+
+    checkAuthentication(token);
+
+    if (placeId) {
+        fetchPlaceDetails(token, placeId);
+    }
+});
+
+function getPlaceIdFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('id');
+}
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+function checkAuthentication(token) {
+    const addReviewSection = document.getElementById('add-review');
+    if (addReviewSection) {
+        if (!token) {
+            addReviewSection.style.display = 'none';
+        } else {
+            addReviewSection.style.display = 'block';
+        }
+    }
+}
+
+async function fetchPlaceDetails(token, placeId) {
+    const headers = {
+        'Content-Type': 'application/json'
+    };
+    
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    try {
+        const response = await fetch(`https://your-api-url.com/api/v1/places/${placeId}`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) return;
+
+        const place = await response.json();
+        displayPlaceDetails(place);
+    } catch (error) {
+        
+    }
+}
+
+function displayPlaceDetails(place) {
+    const placeDetailsSection = document.getElementById('place-details');
+    if (!placeDetailsSection) return;
+
+    placeDetailsSection.innerHTML = '';
+
+    const amenitiesList = place.amenities && place.amenities.length > 0
+        ? place.amenities.map(item => `<li>${item.name || item}</li>`).join('')
+        : '<li>No amenities available</li>';
+
+    const reviewsList = place.reviews && place.reviews.length > 0
+        ? place.reviews.map(rev => `
+            <div class="review-card">
+                <p><strong>${rev.user_name || 'User'}:</strong> ${rev.comment || rev.text}</p>
+                <p>Rating: ${rev.rating} / 5</p>
+            </div>
+        `).join('')
+        : '<p>No reviews yet.</p>';
+
+    placeDetailsSection.innerHTML = `
+        <h1>${place.name}</h1>
+        <p class="description">${place.description}</p>
+        <p class="price"><strong>Price:</strong> $${place.price}</p>
+        
+        <div class="amenities-section">
+            <h3>Amenities:</h3>
+            <ul>${amenitiesList}</ul>
+        </div>
+
+        <div class="reviews-section">
+            <h3>Reviews:</h3>
+            ${reviewsList}
+        </div>
+    `;
+}
+document.addEventListener("DOMContentLoaded", () => {
+    const placesData = {
+        "1": {
+            title: "Cozy Beachhouse",
+            price: "$150 / night",
+            description: "A lovely beach house right next to the shore with peaceful vibes.",
+            amenities: "Wi-Fi, Ocean View, Kitchen, AC",
+        
+            reviews: [
+                { name: "Ahmad Hassan", rating: "5.0", text: "Amazing stay! The sound of the waves at night was so relaxing." },
+                { name: "Mona Ali", rating: "4.5", text: "Very clean and cozy, highly recommended." }
+            ]
+        },
+        "2": {
+            title: "City Center Apartment",
+            price: "$90 / night",
+            description: "Modern apartment located right in the heart of the city near all attractions.",
+            amenities: "Wi-Fi, Elevator, Free Parking, Smart TV",
+            reviews: [
+                { name: "Fahad Salem", rating: "4.0", text: "Great location! Close to all restaurants and shops." }
+            ]
+        },
+        "3": {
+            title: "Corniche Luxury Resort",
+            price: "$200 / night",
+            description: "A high-end resort with premium services and full sea view.",
+            amenities: "Wi-Fi, Swimming Pool, Gym, Spa, Breakfast included",
+            reviews: [
+                { name: "Sara Abdullah", rating: "5.0", text: "The view was breathtaking! Very clean and quiet place." },
+                { name: "Khaled Omar", rating: "4.0", text: "Great experience overall, host was very welcoming." }
+            ]
+        }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const placeId = urlParams.get("id") || "1";
+    const place = placesData[placeId];
+
+    if (place) {
+        document.getElementById("place-title").innerText = place.title;
+        document.getElementById("place-price").innerText = place.price;
+        document.getElementById("place-desc").innerText = place.description;
+        document.getElementById("place-amenities").innerText = place.amenities;
+
+        const reviewsContainer = document.getElementById("reviews-list");
+        if (reviewsContainer) {
+            reviewsContainer.innerHTML = place.reviews.map(review => `
+                <article class="review-card">
+                    <h4>${review.name} <span class="rating-badge">★ ${review.rating}</span></h4>
+                    <p>"${review.text}"</p>
+                </article>
+            `).join("");
+        }
+    }
+});
