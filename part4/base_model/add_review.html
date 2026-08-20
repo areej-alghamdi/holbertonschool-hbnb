@@ -11,18 +11,20 @@
 <body>
     <header>
         <img src="images/logo.png" alt="HBnB Logo" class="logo">
+
         <nav>
             <a href="index.html">Home</a>
             <a href="login.html" class="login-button">Login</a>
         </nav>
-
     </header>
 
     <main>
         <h1>Add Review</h1>
-        <form class="form">
+
+        <form id="review-form" class="form">
             <label for="review">Your Review:</label>
             <textarea id="review" name="review" required></textarea>
+
             <label for="rating">Rating:</label>
             <select id="rating" name="rating" required>
                 <option value="">Select a rating</option>
@@ -35,12 +37,13 @@
 
             <button type="submit">Submit Review</button>
         </form>
-
     </main>
+
     <footer>
         <p>&copy; 2026 HBnB. All rights reserved.</p>
     </footer>
- <script src="scripts.js"></script>
+
+    <script src="scripts.js"></script>
 </body>
 
 </html>

@@ -226,7 +226,8 @@ async function fetchPlaceDetails(token, placeId) {
     }
 
     try {
-        const response = await fetch(`https://your-api-url.com/api/v1/places/${placeId}`, {
+        const response = await fetch(
+            `http://127.0.0.1:5000/api/v1/places/${placeId}`, {
             method: 'GET',
             headers: headers
         });
@@ -330,3 +331,82 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 });
+
+// Task 4 - Add Review
+
+document.addEventListener('DOMContentLoaded', () => {
+    const reviewForm = document.getElementById('review-form');
+    const reviewInput = document.getElementById('review');
+    const ratingSelect = document.getElementById('rating');
+    
+    if (!reviewForm || !reviewInput || !ratingSelect) {
+        return;
+    }
+
+    const token = getCookie('token');
+    const placeId = getPlaceIdFromURL();
+
+    // User must be logged in
+    if (!token) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Place ID must exist in the URL
+    if (!placeId) {
+        alert('Place not found');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    reviewForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const reviewText = reviewInput.value;
+        const rating = ratingSelect.value;
+
+        await submitReview(token, placeId, reviewText, rating, reviewForm);
+    });
+});
+
+
+async function submitReview(token, placeId, reviewText, rating, reviewForm) {
+    try {
+        const response = await fetch(
+            'http://127.0.0.1:5000/api/v1/reviews/',
+            {
+                method: 'POST',
+
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+
+                body: JSON.stringify({
+                    text: reviewText,
+                    rating: Number(rating),
+                    place_id: placeId
+                })
+            }
+        );
+
+        if (response.ok) {
+            alert('Review submitted successfully!');
+            reviewForm.reset();
+        } else {
+            const errorData = await response.json().catch(() => null);
+
+            const message =
+                errorData?.error ||
+                errorData?.message ||
+                errorData?.msg ||
+                'Failed to submit review';
+
+            alert(message);
+        }
+
+    } catch (error) {
+        console.error('Error submitting review:', error);
+        alert('An error occurred while submitting the review.');
+    }
+}
