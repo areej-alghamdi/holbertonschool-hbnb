@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loginUser(email, password) {
-    const apiUrl = 'http://127.0.0.1:5000/api/v1/login';
+        const apiUrl = 'http://127.0.0.1:5000/api/v1/auth/login';
 
     try {
         const response = await fetch(apiUrl, {
